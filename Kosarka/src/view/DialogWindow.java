@@ -71,8 +71,8 @@ public class DialogWindow extends JDialog implements ActionListener {
 		fieldUsername = new TextField(35);
 		fieldPassword = new PasswordField(35);
 		
-		fieldUsername.setText("markoradovic");
-		fieldPassword.setText("python");
+		fieldUsername.setText("jovosunjka");
+		fieldPassword.setText("java");
 		// inicijalizovani radi lakseg testiranja
 		
 		checkBox = new JCheckBox("Prikazi password");

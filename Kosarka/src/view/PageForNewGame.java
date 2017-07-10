@@ -36,7 +36,7 @@ public class PageForNewGame extends JSplitPane implements ActionListener {
 	private JLabel cetvrtinaLabel;
 	private JButton dugmeZaCetvrtinu;
 	
-	private int indeksCetvrtine = 1;
+	private int indeksCetvrtine = 0;
 	
 	private Dimension SIZE_SCREEN = Toolkit.getDefaultToolkit().getScreenSize();
 	
@@ -66,7 +66,7 @@ public class PageForNewGame extends JSplitPane implements ActionListener {
 		cetvrtinaLabel = new JLabel("", JLabel.CENTER);
 		cetvrtinaLabel.setFont(new Font("", Font.PLAIN, 25));
 		
-		dugmeZaCetvrtinu = new JButton("Zapocni prvu cetvrtinu");
+		dugmeZaCetvrtinu = new JButton("Zapocni 1. cetvrtinu");
 		dugmeZaCetvrtinu.addActionListener(this);
 		dugmeZaCetvrtinu.setBackground(Color.GREEN);
 	

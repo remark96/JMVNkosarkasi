@@ -1,8 +1,10 @@
 package controller;
 
+import java.awt.BorderLayout;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -12,6 +14,8 @@ import model.DataBase;
 import model.Igrac;
 import model.IzvestajUtakmice;
 import model.Klub;
+import model.StanjeKlupa;
+import model.StanjeTeren;
 import model.StatistikaIgraca;
 import model.Sut;
 import model.User;
@@ -19,11 +23,15 @@ import model.VrstaSuta;
 import view.CustomNewGame;
 import view.DialogForKvadrant;
 import view.DialogWindow;
+import view.DrugaStranaCNP;
 import view.GraphicalElement;
+import view.ImagePanel;
 import view.MainWindow;
 import view.PageForAdministrator;
 import view.PageForNewGame;
 import view.PageForRegularUser;
+import view.PageForReports;
+import view.PrvaStranaCNP;
 import view.Spinner;
 
 public class Controller {
@@ -117,16 +125,47 @@ public class Controller {
 		PageForNewGame pageForNewGame = mainWindow.getPageForNewGame();
 		
 		if (pageForNewGame.getDugmeZaCetvrtinu().getText().equals("Kraj")) {
+			int opcija = JOptionPane.showOptionDialog(pageForNewGame, "Da li zelite sad da pogledate upravo kreirani izvestaj utakmice?", "Prikazivanje izvestaja utakmice...", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+			
+			if (opcija == 0) {
+				IzvestajUtakmice aktuelniIzvestaj = aplikacija.getAktuelniIzvestajUtakmice();
+				mainWindow.setPageForReports(new PageForReports(this, aktuelniIzvestaj));
+				mainWindow.putPageForReportsOnScreen();
+			}
+			else if (opcija == 1) mainWindow.putPageForUserOnScreen();
 			
 		}
 		else {
+			pageForNewGame.setIndeksCetvrtine(pageForNewGame.getIndeksCetvrtine() + 1);
 			pageForNewGame.getCetvrtinaLabel().setText(pageForNewGame.getIndeksCetvrtine() + ". Cetvrtina");
-			pageForNewGame.setIndeksCetvrtine(pageForNewGame.getIndeksCetvrtine() + 1);;
+			
+			if (pageForNewGame.getIndeksCetvrtine() == 1) ukljuciDataPanele(pageForNewGame);
+			
 			String ispis;
-			if (pageForNewGame.getIndeksCetvrtine() < 5) ispis = "Zapocni " + pageForNewGame.getIndeksCetvrtine() + ". cetvrtinu";
+			if (pageForNewGame.getIndeksCetvrtine() < 4) ispis = "Zapocni " + (pageForNewGame.getIndeksCetvrtine() + 1) + ". cetvrtinu";
 			else ispis = "Kraj";
 			pageForNewGame.getDugmeZaCetvrtinu().setText(ispis);
 		}
+		
+	}
+	
+	private void ukljuciDataPanele(PageForNewGame pageForNewGame) {
+		ImagePanel ip = pageForNewGame.getWestpanel();
+		GraphicalElement[] hostPlayers = ip.getHostPlayers();
+		GraphicalElement[] guestPlayers = ip.getGuestPlayers();
+		GraphicalElement trenerDomacin  = ip.getTrenerDomacin();
+		GraphicalElement trenerGost = ip.getTrenerGost();
+		
+		ArrayList<StatistikaIgraca> statistikeDomacihIgraca = aplikacija.getAktuelniIzvestajUtakmice().getStatistikaDomacihIgraca();
+    	ArrayList<StatistikaIgraca> statistikeGostujucihIgraca = aplikacija.getAktuelniIzvestajUtakmice().getStatistikaGostujucihIgraca();
+		
+		for (int i = 0; i < hostPlayers.length; i++) {
+			if (statistikeDomacihIgraca.get(i).getAktuelnoStanje().getTip() == 1) hostPlayers[i].getDataPanel().setEnabled(true);
+			if(statistikeGostujucihIgraca.get(i).getAktuelnoStanje().getTip() == 1) guestPlayers[i].getDataPanel().setEnabled(true);
+			
+		}
+		trenerDomacin.getDataPanel().setEnabled(true);
+		trenerGost.getDataPanel().setEnabled(true);
 		
 	}
 
@@ -194,7 +233,7 @@ public class Controller {
 				case 28: cetvrtina.setFaulUOdbrani(value); break;	
 				default: break;
 			}
-			
+			System.out.println(Spinner.imenaAtributa[indeksAtributa] + "|" + indeksAtributa);
 			String sql = "update CETVRTINA set " + Spinner.imenaAtributa[indeksAtributa] + " = " + spinner.getValue().toString() + " where redbr = " 
 						+ pageForNewGame.getIndeksCetvrtine() + " and idigraca = " + statistikaIgraca.getIgrac().getId() + " and idutakmice = " 
 						+ aktuelniIzvestaj.getUtakmica().getIdUtakmice();
@@ -209,14 +248,15 @@ public class Controller {
 		System.out.println("AAAAAAAAAAA");
 		
 	}
-
-	public void processOkForNewGameEvent() {
+	
+	public void processButtonNextForNewGameEvent() {
 		CustomNewGame customNewGame = mainWindow.getCustomeNewGame();
+		PrvaStranaCNP prvaStrana = customNewGame.getPrvaStrana();
 		
-		int indexDomacegKluba = customNewGame.getComboDomaciKlub().getSelectedIndex();
-		int indexGostujucegKluba = customNewGame.getComboGostujuciKlub().getSelectedIndex();
-		int indexDelegata = customNewGame.getComboDelegat().getSelectedIndex();
-		int indexHale = customNewGame.getComboHala().getSelectedIndex();
+		int indexDomacegKluba = prvaStrana.getComboDomaciKlub().getSelectedIndex();
+		int indexGostujucegKluba = prvaStrana.getComboGostujuciKlub().getSelectedIndex();
+		int indexDelegata = prvaStrana.getComboDelegat().getSelectedIndex();
+		int indexHale = prvaStrana.getComboHala().getSelectedIndex();
 		
 		if (indexDomacegKluba == 0 || indexGostujucegKluba == 0 || indexDelegata == 0 || indexHale == 0 || indexDomacegKluba == indexGostujucegKluba) {
 			JOptionPane.showMessageDialog(customNewGame, "Neispravan odabir!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -225,23 +265,34 @@ public class Controller {
 		
 		ArrayList<Integer> indexiSudija = new ArrayList<Integer>();
 		try {
-			proveriIspravnostOdabiraSudije(customNewGame.getComboPrviSudija().getSelectedIndex() - 1, indexiSudija);
-			proveriIspravnostOdabiraSudije(customNewGame.getComboDrugiSudija().getSelectedIndex() - 1, indexiSudija);
-			proveriIspravnostOdabiraSudije(customNewGame.getComboTreciSudija().getSelectedIndex() - 1, indexiSudija);
+			proveriIspravnostOdabiraSudije(prvaStrana.getComboPrviSudija().getSelectedIndex() - 1, indexiSudija);
+			proveriIspravnostOdabiraSudije(prvaStrana.getComboDrugiSudija().getSelectedIndex() - 1, indexiSudija);
+			proveriIspravnostOdabiraSudije(prvaStrana.getComboTreciSudija().getSelectedIndex() - 1, indexiSudija);
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(customNewGame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
-		mainWindow.getCustomeNewGame().setVisible(false);
-		
 		aplikacija.noviIzvestajUtakmice(indexDomacegKluba - 1, indexGostujucegKluba - 1, indexiSudija, indexDelegata - 1, indexHale - 1);
-		aplikacija.sacuvajNoviIzvestajUtakmice();
 		
-		mainWindow.setPageForNewGame(new PageForNewGame(this));
-		mainWindow.putPageForNewGamerOnScreen();
+		customNewGame.getContentPane().remove(customNewGame.getPrvaStrana());
+		customNewGame.setDrugaStrana(new DrugaStranaCNP(this));
+		customNewGame.getContentPane().add(customNewGame.getDrugaStrana(), BorderLayout.CENTER);
+			
+			
+	
 		
+//		else {
+			
+//			aplikacija.sacuvajNoviIzvestajUtakmice();
+//			mainWindow.getCustomeNewGame().setVisible(false);
+//			mainWindow.setPageForNewGame(new PageForNewGame(this));
+//			mainWindow.putPageForNewGamerOnScreen();
+//		}
+		
+		customNewGame.revalidate();
+		customNewGame.repaint();
 	}
 
 	private void proveriIspravnostOdabiraSudije(int index, ArrayList<Integer> indexiSudija) throws Exception {
@@ -253,6 +304,40 @@ public class Controller {
 		
 		
 	}
+	
+//	public void processOkForNewGameEvent() {
+//		CustomNewGame customNewGame = mainWindow.getCustomeNewGame();
+//		
+//		int indexDomacegKluba = customNewGame.getComboDomaciKlub().getSelectedIndex();
+//		int indexGostujucegKluba = customNewGame.getComboGostujuciKlub().getSelectedIndex();
+//		int indexDelegata = customNewGame.getComboDelegat().getSelectedIndex();
+//		int indexHale = customNewGame.getComboHala().getSelectedIndex();
+//		
+//		if (indexDomacegKluba == 0 || indexGostujucegKluba == 0 || indexDelegata == 0 || indexHale == 0 || indexDomacegKluba == indexGostujucegKluba) {
+//			JOptionPane.showMessageDialog(customNewGame, "Neispravan odabir!", "Error", JOptionPane.ERROR_MESSAGE);
+//			return;
+//		}
+//		
+//		ArrayList<Integer> indexiSudija = new ArrayList<Integer>();
+//		try {
+//			proveriIspravnostOdabiraSudije(customNewGame.getComboPrviSudija().getSelectedIndex() - 1, indexiSudija);
+//			proveriIspravnostOdabiraSudije(customNewGame.getComboDrugiSudija().getSelectedIndex() - 1, indexiSudija);
+//			proveriIspravnostOdabiraSudije(customNewGame.getComboTreciSudija().getSelectedIndex() - 1, indexiSudija);
+//			
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(customNewGame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//			return;
+//		}
+//		
+//		mainWindow.getCustomeNewGame().setVisible(false);
+//		
+//		aplikacija.noviIzvestajUtakmice(indexDomacegKluba - 1, indexGostujucegKluba - 1, indexiSudija, indexDelegata - 1, indexHale - 1);
+//		aplikacija.sacuvajNoviIzvestajUtakmice();
+//		
+//		mainWindow.setPageForNewGame(new PageForNewGame(this));
+//		mainWindow.putPageForNewGamerOnScreen();
+//		
+//	}
 
 	public void processCancelFroNewgameEvent() {
 		mainWindow.getCustomeNewGame().setVisible(false);
@@ -313,4 +398,88 @@ public class Controller {
 			e.printStackTrace();
 		}
 	}
+	
+	public void processBackFroNewgameEvent() {
+		CustomNewGame customNewGame = mainWindow.getCustomeNewGame();
+		customNewGame.getContentPane().remove(customNewGame.getDrugaStrana());
+		customNewGame.getContentPane().add(customNewGame.getPrvaStrana(), BorderLayout.CENTER);
+		
+		customNewGame.revalidate();
+		customNewGame.repaint();
+	}
+	
+	public void processButtonFinishForNewGameEvent() {
+		CustomNewGame customNewGame = mainWindow.getCustomeNewGame();
+		
+		JCheckBox[] domaciCheckBox = customNewGame.getDrugaStrana().getDomaci();
+		JCheckBox[] gostujuciCheckBox = customNewGame.getDrugaStrana().getGostujuci();
+		
+		ArrayList<StatistikaIgraca> statistikeDomacihIgraca = aplikacija.getAktuelniIzvestajUtakmice().getStatistikaDomacihIgraca();
+		ArrayList<StatistikaIgraca> statistikeGostujucihIgraca = aplikacija.getAktuelniIzvestajUtakmice().getStatistikaGostujucihIgraca();
+    	
+		
+		int[] prvaPostavaDomaci;
+		int[] prvaPostavaGostujuci;
+		
+		try {
+			prvaPostavaDomaci = proveriCheckiranje(domaciCheckBox);
+			prvaPostavaGostujuci =  proveriCheckiranje(gostujuciCheckBox);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(customNewGame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		
+		postaviPrvuPostavu(prvaPostavaDomaci, statistikeDomacihIgraca);
+		postaviPrvuPostavu(prvaPostavaGostujuci, statistikeGostujucihIgraca);
+		
+		aplikacija.sacuvajNoviIzvestajUtakmice();
+		mainWindow.getCustomeNewGame().setVisible(false);
+		
+//		JProgressBar progressBar = new JProgressBar();
+//		progressBar.setVisible(true);
+//		progressBar.setToolTipText("Postavljanje terena...");
+		
+		
+		mainWindow.setPageForNewGame(new PageForNewGame(this));
+		mainWindow.putPageForNewGamerOnScreen();
+		
+	}
+	
+	private void postaviPrvuPostavu(int[] prvaPostava, ArrayList<StatistikaIgraca> statistikeIgraca) {
+		boolean uslov;
+		
+		for (int i = 0; i < statistikeIgraca.size(); i++) {
+			uslov = true;
+			for (Integer index : prvaPostava) {
+				if (i == index) {
+					statistikeIgraca.get(i).promeniStanje(new StanjeTeren());
+					uslov = false;
+					break;
+				}
+			}
+			
+			if (uslov) statistikeIgraca.get(i).promeniStanje(new StanjeKlupa());
+		}
+		
+	}
+	
+	private int[] proveriCheckiranje(JCheckBox[] checkBox) throws Exception {
+		int br = 0;
+		int[] prvaPostava = new int[5];
+		
+		for (int i = 0; i < checkBox.length; i++) {
+			if (checkBox[i].isSelected()) {
+				if (br >= 5) throw new Exception("Neispravno check-iranje startnih igraca!"); 
+				prvaPostava[br] = i;
+				br++;
+				
+			}
+		}
+		
+		if (br != 5) throw new Exception("Neispravno check-iranje startnih igraca!"); 
+		
+		return prvaPostava;
+	}
+
 }

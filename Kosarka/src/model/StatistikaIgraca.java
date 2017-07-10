@@ -31,7 +31,7 @@ public class StatistikaIgraca {
 	public void setCetvrtine(ArrayList<Cetvrtina> cetvrtine) { this.cetvrtine = cetvrtine; }
 
 	public StanjeIgraca getAktuelnoStanje() { return aktuelnoStanje; }
-	public void setAktuelnoStanje(StanjeIgraca aktuelnoStanje) { this.aktuelnoStanje = aktuelnoStanje; }
+	public void promeniStanje(StanjeIgraca aktuelnoStanje) { this.aktuelnoStanje = aktuelnoStanje; }
 
 	public double getMinutes() { return minutes; }
 	public void setMinutes(double minutes) { this.minutes = minutes; }

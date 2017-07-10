@@ -30,7 +30,6 @@ import model.User;
 @SuppressWarnings("serial")
 public class PageForAdministrator extends JPanel implements ActionListener
 {
-	protected Aplikacija aplikacija;
 	protected Controller controller;
 	
 	protected JLabel name;
@@ -58,7 +57,6 @@ public class PageForAdministrator extends JPanel implements ActionListener
 	public PageForAdministrator(Aplikacija aplikacija, Controller controller) {
 		setLayout(new BorderLayout());
 		
-		this.aplikacija = aplikacija;
 		this.controller = controller;
 		
 		this.table = new JTable();
@@ -79,7 +77,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		northPanel.add(name);
 		northPanel.add(nameOfUser);
 		
-		vmb = new VerticalMenuBar(aplikacija, this);
+		vmb = new VerticalMenuBar(controller, this);
 	
 		westPanel.add(vmb, BorderLayout.NORTH);
 		
@@ -90,7 +88,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		trenutnaFunkcija = "";
 	}
 	public void funcForWestPanel(User user) {
-		String[] menusStr = { "KLUBOVI", "HALE", "IGRACI", "TRENERI", "SUDIJE", "DELEGATI", "KORISNICI", "OSTALO" };
+		String[] menusStr = { "KLUBOVI", "HALE", "IGRACI", "TRENERI", "SUDIJE", "DELEGATI", "KORISNICI"};
 		String[][] items = { { "Prikaz klubova", "Dodavanje klubova", "Izmena klubova", "Brisanje klubova" },
 				{ "Prikaz hala", "Dodavanje hala", "Izmena hala", "Brisanje hala" },
 				{ "Prikaz igraca", "Dodavanje igraca", "Izmena igraca", "Brisanje igraca" },
@@ -98,7 +96,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 				{ "Prikaz sudija", "Dodavanje sudija", "Izmena sudija", "Brisanje sudija" },
 				{ "Prikaz delegata", "Dodavanje delegata", "Izmena delegata", "Brisanje delegata" },
 				{ "Prikaz korisnika", "Dodavanje korisnika", "Izmena korisnika", "Brisanje korisnika" },
-				{ "Promena lozinke", "Sign out" } };
+				 };
 
 		putMenuBar(menusStr, items);
 
@@ -120,7 +118,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		centerPanel = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		ArrayList<Igrac> igraci = aplikacija.getIgraci();
+		ArrayList<Igrac> igraci = controller.aplikacija.getIgraci();
 
 		DefaultTableModel tm = new DefaultTableModel();
 		tm.setColumnIdentifiers(new String[] { "Redni broj", "Id", "IdKluba", "Ime", "Prezime", "Visina", "Tezina",
@@ -195,7 +193,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		
 		Klub prazanKlub = new Klub(-1, "", null, null, null, null);
 		unosIdKluba.addItem(prazanKlub);
-		ArrayList<Klub> klubovi = aplikacija.getKlubovi();
+		ArrayList<Klub> klubovi = controller.aplikacija.getKlubovi();
 		for (int i = 0; i < klubovi.size(); i++) unosIdKluba.addItem(klubovi.get(i));
 
 		panel.add(praznaLabela1); panel.add(labelaId); panel.add(praznaLabela16);   
@@ -279,12 +277,12 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		
 		Igrac prazanIgrac = new Igrac(-1, "", "", -1, -1, -1, "");
 		unosIdIzmena.addItem(prazanIgrac);
-		ArrayList<Igrac> igraci = aplikacija.getIgraci();
+		ArrayList<Igrac> igraci = controller.aplikacija.getIgraci();
 		for(int i=0; i<igraci.size(); i++) unosIdIzmena.addItem(igraci.get(i));
 		
 		Klub prazanKlub = new Klub(-1, "", null, null, null, null);
 		unosIdKluba.addItem(prazanKlub);
-		ArrayList<Klub> klubovi = aplikacija.getKlubovi();
+		ArrayList<Klub> klubovi = controller.aplikacija.getKlubovi();
 		for (int i = 0; i < klubovi.size(); i++) unosIdKluba.addItem(klubovi.get(i));
 
 		panel.add(praznaLabela1); panel.add(labelaId); panel.add(praznaLabela16);   
@@ -348,7 +346,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		
 		Igrac prazanIgrac = new Igrac(-1, "", "", -1, -1, -1, "");
 		unosIdIzmena.addItem(prazanIgrac);
-		ArrayList<Igrac> igraci = aplikacija.getIgraci();
+		ArrayList<Igrac> igraci = controller.aplikacija.getIgraci();
 		for(int i=0; i<igraci.size(); i++) unosIdIzmena.addItem(igraci.get(i));
 				
 		panel.add(praznaLabela1); panel.add(labelaId); panel.add(praznaLabela2);
@@ -374,7 +372,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		centerPanel = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		ArrayList<Hala> hale = aplikacija.getHale();
+		ArrayList<Hala> hale = controller.aplikacija.getHale();
 
 		DefaultTableModel tm = new DefaultTableModel();
 		tm.setColumnIdentifiers(new String[] { "Redni broj", "Naziv", "Adresa", "Mesto" });
@@ -476,13 +474,5 @@ public class PageForAdministrator extends JPanel implements ActionListener
 
 	public VerticalMenuBar getVmb() { return vmb; }
 	public void setVmb(VerticalMenuBar vmb) { this.vmb = vmb; }
-	
-	public Aplikacija getAplikacija() {
-		return aplikacija;
-	}
-
-	public void setAplikacija(Aplikacija aplikacija) {
-		this.aplikacija = aplikacija;
-	}
 
 }

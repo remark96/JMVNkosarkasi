@@ -21,7 +21,7 @@ public class DataBase {
 	public static void  initDB() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "MARECARE", "ftn");
+			connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "JovoSunjka", "ftn");
 			statement = connection.createStatement();
 
 			//preparedStatment = connection.prepareStatement(sql)

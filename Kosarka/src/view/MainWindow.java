@@ -18,6 +18,8 @@ public class MainWindow extends JFrame {
 	
 	private PageForNewGame pageForNewGame;
 	
+	private PageForReports pageForReports;
+	
 	private PageForAdministrator pageForAdministrator;
 	
 	private CustomNewGame customeNewGame;
@@ -132,6 +134,18 @@ public class MainWindow extends JFrame {
 		refresh();
 	}
 	
+	public void putHomePageOnScreen() {
+		getContentPane().removeAll();
+		getContentPane().add(homePage, BorderLayout.CENTER);
+		refresh();
+	}
+	
+	public void putPageForReportsOnScreen() {
+		getContentPane().removeAll();
+		getContentPane().add(pageForReports, BorderLayout.CENTER);
+		refresh();
+	}
+	
 	public void putPageForNewGamerOnScreen() {
 		getContentPane().removeAll();
 		getContentPane().add(pageForNewGame, BorderLayout.CENTER);
@@ -150,5 +164,15 @@ public class MainWindow extends JFrame {
 	public void setPageForAdministrator(PageForAdministrator pageForAdministrator) {
 		this.pageForAdministrator = pageForAdministrator;
 	}
+
+	public PageForReports getPageForReports() {
+		return pageForReports;
+	}
+
+	public void setPageForReports(PageForReports pageForReports) {
+		this.pageForReports = pageForReports;
+	}
+	
+	
 
 }

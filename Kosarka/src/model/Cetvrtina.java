@@ -164,4 +164,8 @@ public class Cetvrtina {
 	public int getFaulUOdbrani() { return faulUOdbrani; }
 	public void setFaulUOdbrani(int faulUOdbrani) { this.faulUOdbrani = faulUOdbrani; }
 	
+	
+	public String[] getArrayStrings(int i) {
+		return new String[] {"" + i, "AAAAA", "CCCC"};
+	}
 }

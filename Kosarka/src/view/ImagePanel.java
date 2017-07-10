@@ -17,9 +17,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import controller.Controller;
-import model.Igrac;
 import model.IzvestajUtakmice;
 import model.Klub;
+import model.StanjeKlupa;
+import model.StanjeTeren;
+import model.StatistikaIgraca;
 
 @SuppressWarnings("serial")
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener {
@@ -39,6 +41,11 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 	
 	public GraphicalElement selectedGraphicalElement;
 	
+	private int[] x_koordinate_domacih_igraca = {getX() +235, getX() + 400, getX() +50, getX() +110, getX() +350, getX() +680, getX() + 680, getX() +568, getX() +792, getX() +792, getX() +568, getX() + 792};
+	private int[] y_koordinate_domacih_igraca = {getY() + 230, getY() + 207, getY() + 207, getY() + 55, getY() + 55, getY() + 17, getY() + 102, getY() + 102, getY() + 17, getY() + 187, getY() + 17, getY() + 102};
+	private int[] x_koordinate_gostujucih_igraca = {getX() +235, getX() + 50, getX() +400, getX() +360, getX() +110, getX() +568, getX() + 680, getX() +680, getX() +792, getX() +568, getX() + 792, getX() +792};
+	private int[] y_koordinate_gostujucih_igraca = {MainWindow.SIZE_SCREEN.height - 368, MainWindow.SIZE_SCREEN.height - 345, MainWindow.SIZE_SCREEN.height - 345, MainWindow.SIZE_SCREEN.height - 195, MainWindow.SIZE_SCREEN.height - 195, getY() + 612, getY() + 527, getY() + 612, getY() + 442, getY() + 527, getY() + 527, getY() + 612};
+	
 	private int oldMouseX = -1;
 	private int oldMouseY = -1;
 	
@@ -52,8 +59,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     	hostPlayers = new GraphicalElement[IzvestajUtakmice.NUM_OF_PLAYERS];
     	guestPlayers = new GraphicalElement[IzvestajUtakmice.NUM_OF_PLAYERS];
     	
-    	Klub domaciKlub = controller.aplikacija.getAktuelniIzvestajUtakmice().getUtakmica().getDomaciKlub();
-    	Klub gostujuciKlub = controller.aplikacija.getAktuelniIzvestajUtakmice().getUtakmica().getGostujuciKlub();
+    	IzvestajUtakmice aktuelniIzvestaj = controller.aplikacija.getAktuelniIzvestajUtakmice();
+    	
+    	Klub domaciKlub = aktuelniIzvestaj.getUtakmica().getDomaciKlub();
+    	Klub gostujuciKlub = aktuelniIzvestaj.getUtakmica().getGostujuciKlub();
     	
     	try {                
     		court = ImageIO.read(new File(pathOfImageOfCourt));
@@ -66,91 +75,54 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     		trenerDomacin = new GraphicalElement(domaciKlub.getTrener().getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.trener, true);
         	trenerGost = new GraphicalElement(gostujuciKlub.getTrener().getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.trener, false);
     		
-        	ArrayList<Igrac> domaciIgraci = domaciKlub.getIgraci();
-        	ArrayList<Igrac> gostujuciIgraci = gostujuciKlub.getIgraci();
+        	ArrayList<StatistikaIgraca> statistikeDomacihIgraca = aktuelniIzvestaj.getStatistikaDomacihIgraca();
+        	ArrayList<StatistikaIgraca> statistikeGostujucihIgraca = aktuelniIzvestaj.getStatistikaGostujucihIgraca();
+        	
         	
     		for (int i = 0; i < IzvestajUtakmice.NUM_OF_PLAYERS; i++) {
-    			hostPlayers[i] = new GraphicalElement(domaciIgraci.get(i).getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.igrac, true);
+    			hostPlayers[i] = new GraphicalElement(statistikeDomacihIgraca.get(i).getIgrac().getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.igrac, true);
+    			
 			}
     		
     		for (int i = 0; i < IzvestajUtakmice.NUM_OF_PLAYERS; i++) {
-    			guestPlayers[i] = new GraphicalElement(gostujuciIgraci.get(i).getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.igrac, false);
+    			guestPlayers[i] = new GraphicalElement(statistikeGostujucihIgraca.get(i).getIgrac().getPutanjaDoFotografije(), 100, 75, TypeOfGraphicalElement.igrac, false);
 			}
-    		
-    		
-    		hostPlayers[0].setX(getX() +235);
-    		hostPlayers[0].setY(getY() + 230);
-    		
-    		hostPlayers[1].setX(getX() + 400);
-    		hostPlayers[1].setY(getY() + 207);
-    		
-    		hostPlayers[2].setX(getX() +50);
-    		hostPlayers[2].setY(getY() + 207);
-    		
-    		hostPlayers[3].setX(getX() +110);
-    		hostPlayers[3].setY(getY() + 55);
-    		
-    		hostPlayers[4].setX(getX() +350);
-    		hostPlayers[4].setY(getY() + 55);
-    		
-    		hostPlayers[5].setX(getX() +680);
-    		hostPlayers[5].setY(getY() + 17);
-    		
-    		hostPlayers[6].setX(getX() + 680);
-    		hostPlayers[6].setY(getY() + 102);
-    		
-    		hostPlayers[7].setX(getX() +568);
-    		hostPlayers[7].setY(getY() + 102);
-    		
-    		hostPlayers[8].setX(getX() +792);
-    		hostPlayers[8].setY(getY() + 17);
-    		
-    		hostPlayers[9].setX(getX() +792);
-    		hostPlayers[9].setY(getY() + 187);
-    		
-    		hostPlayers[10].setX(getX() +568);
-    		hostPlayers[10].setY(getY() + 17);
-    		
-    		hostPlayers[11].setX(getX() + 792);
-    		hostPlayers[11].setY(getY() + 102);
     		
     		//--------------------------------------------------------------
     		
-    		guestPlayers[0].setX(getX() +235);
-    		guestPlayers[0].setY(MainWindow.SIZE_SCREEN.height - 368);
+    		int m, k;
+        	
+    		m = 0;
+        	k = 5;
+    		for (int i = 0; i < hostPlayers.length; i++) {
+    			if (statistikeDomacihIgraca.get(i).getAktuelnoStanje().getTip() == 1) {
+    				hostPlayers[i].setX(x_koordinate_domacih_igraca[m]);
+            		hostPlayers[i].setY(y_koordinate_domacih_igraca[m]);
+            		m++;
+				}
+    			else {
+    				hostPlayers[i].setX(x_koordinate_domacih_igraca[k]);
+            		hostPlayers[i].setY(y_koordinate_domacih_igraca[k]);
+            		k++;
+    			}
+    			
+    			
+			}
     		
-    		guestPlayers[1].setX(getX() + 50);
-    		guestPlayers[1].setY(MainWindow.SIZE_SCREEN.height - 345);
-    		
-    		guestPlayers[2].setX(getX() +400);
-    		guestPlayers[2].setY(MainWindow.SIZE_SCREEN.height - 345);
-    		
-    		guestPlayers[3].setX(getX() +360);
-    		guestPlayers[3].setY(MainWindow.SIZE_SCREEN.height - 195);
-			
-    		guestPlayers[4].setX(getX() +110);
-    		guestPlayers[4].setY(MainWindow.SIZE_SCREEN.height - 195);
-    		
-    		guestPlayers[5].setX(getX() +568);
-    		guestPlayers[5].setY(getY() + 612);
-    		
-    		guestPlayers[6].setX(getX() + 680);
-    		guestPlayers[6].setY(getY() + 527);
-    		
-    		guestPlayers[7].setX(getX() +680);
-    		guestPlayers[7].setY(getY() + 612);
-    		
-    		guestPlayers[8].setX(getX() +792);
-    		guestPlayers[8].setY(getY() + 442);
-			
-    		guestPlayers[9].setX(getX() +568);
-    		guestPlayers[9].setY(getY() + 527); 
-    		
-    		guestPlayers[10].setX(getX() + 792);
-    		guestPlayers[10].setY(getY() + 527);
-    		
-    		guestPlayers[11].setX(getX() +792); 
-    		guestPlayers[11].setY(getY() + 612);
+    		m = 0;
+    		k = 5;
+    		for (int j = 0; j < guestPlayers.length; j++) {
+    			if (statistikeGostujucihIgraca.get(j).getAktuelnoStanje().getTip() == 1) {
+    				guestPlayers[j].setX(x_koordinate_gostujucih_igraca[m]);
+        			guestPlayers[j].setY(y_koordinate_gostujucih_igraca[m]);
+        			m++;
+    			}
+    			else {
+    				guestPlayers[j].setX(x_koordinate_gostujucih_igraca[k]);
+            		guestPlayers[j].setY(y_koordinate_gostujucih_igraca[k]);
+            		k++;
+    			}
+			}
     		
     		// -----------------------------------------------------
     		
@@ -171,6 +143,12 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     		addMouseListener(this);
     		addMouseMotionListener(this);
 		
+    		for (int i = 0; i < hostPlayers.length; i++) {
+    			hostPlayers[i].getDataPanel().setEnabled(false);
+    			guestPlayers[i].getDataPanel().setEnabled(false);
+    		}
+    		trenerDomacin.getDataPanel().setEnabled(false);
+    		trenerGost.getDataPanel().setEnabled(false);
     	} 
     	
     	catch (IOException ex) {
@@ -180,7 +158,19 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      
     }
 
-    @Override
+    public GraphicalElement getTrenerDomacin() { return trenerDomacin; }
+	public void setTrenerDomacin(GraphicalElement trenerDomacin) { this.trenerDomacin = trenerDomacin; }
+	
+	public GraphicalElement getTrenerGost() { return trenerGost; }
+	public void setTrenerGost(GraphicalElement trenerGost) { this.trenerGost = trenerGost; }
+
+	public GraphicalElement[] getHostPlayers() { return hostPlayers; }
+	public void setHostPlayers(GraphicalElement[] hostPlayers) { this.hostPlayers = hostPlayers; }
+
+	public GraphicalElement[] getGuestPlayers() { return guestPlayers; }
+	public void setGuestPlayers(GraphicalElement[] guestPlayers) { this.guestPlayers = guestPlayers; }
+
+	@Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(court, getX() + 10, getY() + 15, MainWindow.SIZE_SCREEN.width / 2 - 140, MainWindow.SIZE_SCREEN.height - 95, this);
@@ -274,6 +264,16 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 			pageForNewGame.getNorthLabel().setText(selectedGraphicalElement.getTitle());
 			if (pageForNewGame.getDataPanel() != null) pageForNewGame.getEastPanel().remove(pageForNewGame.getDataPanel());
 			pageForNewGame.setDataPanel(selectedGraphicalElement.getDataPanel());
+			
+			StatistikaIgraca statistikaIgraca;
+			
+			if (selectedGraphicalElement.getDomaci()) statistikaIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaDomacegIgr(selectedGraphicalElement.getTitle());
+			else statistikaIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaGostujucegIgr(selectedGraphicalElement.getTitle());
+			
+			if (selectedGraphicalElement.getType() == TypeOfGraphicalElement.igrac && statistikaIgraca.getAktuelnoStanje().getTip() != 1) {
+				pageForNewGame.getDataPanel().setEnabled(false);
+			}
+			
 			//pageForNewGame.getEastpanel().add(selectedGraphicalElement.getDataPanel(), BorderLayout.CENTER);
 			pageForNewGame.refreshDataPanel();
 		}
@@ -293,12 +293,12 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 			boolean condition = existsInTeam(hostPlayers);
 			
 			if(condition) {
-				findAndSolveColision(hostPlayers);
+				findAndSolveColision(hostPlayers, pageForNewGame);
 			}
 			else {
 				condition = existsInTeam(guestPlayers);
 				if (condition) {
-					findAndSolveColision(guestPlayers);
+					findAndSolveColision(guestPlayers, pageForNewGame);
 				}
 				else {
 					selectedGraphicalElement.setX(oldSelectedPersonX);
@@ -306,6 +306,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 				}
 				
 			}
+			
 			
 //			mainWindow.getIgrac().setText(selectedGraphicalElement.getNameAndSurname());
 		}
@@ -316,9 +317,42 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 		repaint();
 	}
 
-	private void findAndSolveColision(GraphicalElement[] players) {
+	private void findAndSolveColision(GraphicalElement[] players, PageForNewGame pageForNewGame) {
 		for (GraphicalElement player : players) {
 			if (!selectedGraphicalElement.equals(player) &&  (Math.abs(selectedGraphicalElement.getX() - player.getX()) < 100 /2) && (Math.abs(selectedGraphicalElement.getY() - player.getY()) < 75 /2)) { 
+				StatistikaIgraca statistikaSelektovanogIgraca, statistikaIgraca;
+				
+				if (selectedGraphicalElement.getDomaci()) statistikaSelektovanogIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaDomacegIgr(selectedGraphicalElement.getTitle());
+				else statistikaSelektovanogIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaGostujucegIgr(selectedGraphicalElement.getTitle());
+				
+				if (player.getDomaci()) statistikaIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaDomacegIgr(player.getTitle());
+				else statistikaIgraca = controller.aplikacija.getAktuelniIzvestajUtakmice().getStatistikaGostujucegIgr(player.getTitle());
+				
+				if (statistikaSelektovanogIgraca.getAktuelnoStanje().getTip() != statistikaIgraca.getAktuelnoStanje().getTip()) {
+					if (statistikaSelektovanogIgraca.getAktuelnoStanje().getTip() == 1) {
+						statistikaSelektovanogIgraca.promeniStanje(new StanjeKlupa());
+						selectedGraphicalElement.getDataPanel().setEnabled(false);
+					}
+					else if (statistikaSelektovanogIgraca.getAktuelnoStanje().getTip() == 2) {
+						statistikaSelektovanogIgraca.promeniStanje(new StanjeTeren());
+						if (pageForNewGame.getIndeksCetvrtine() != 0) selectedGraphicalElement.getDataPanel().setEnabled(true);
+					}
+					
+					if (statistikaIgraca.getAktuelnoStanje().getTip() == 1) {
+						statistikaIgraca.promeniStanje(new StanjeKlupa());
+						player.getDataPanel().setEnabled(false);
+					}
+					else if (statistikaIgraca.getAktuelnoStanje().getTip() == 2) {
+						statistikaIgraca.promeniStanje(new StanjeTeren());
+						if (pageForNewGame.getIndeksCetvrtine() != 0) player.getDataPanel().setEnabled(true);
+					}
+				}
+				
+				
+				if (selectedGraphicalElement.getType() == TypeOfGraphicalElement.igrac && statistikaIgraca.getAktuelnoStanje().getTip() != 1) {
+					
+				}
+				
 				selectedGraphicalElement.setX(player.getX());
 				selectedGraphicalElement.setY(player.getY());
 				

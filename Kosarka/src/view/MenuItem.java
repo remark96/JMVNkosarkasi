@@ -4,15 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class MenuItem extends JMenuItem implements ActionListener 
 {
-	private PageForAdministrator pfa;
+	private JPanel page;
 	
-	public MenuItem(String nameOfMenuItem, PageForAdministrator page) {
+	public MenuItem(String nameOfMenuItem, JPanel page) {
 		super(nameOfMenuItem);
-		this.pfa = page;
+		this.page = page;
 	}
 	
 	public void addActionListener() {
@@ -24,30 +25,28 @@ public class MenuItem extends JMenuItem implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//vmb.getPage().funcForCenterPanel(menuItem);
+		PageForAdministrator pageForAdministrator = (PageForAdministrator) page;
+		
 		switch (e.getActionCommand()) 
 		{
 			case "Prikaz igraca":
-				((PageForAdministrator) pfa).prikaziIgrace();
+				pageForAdministrator.prikaziIgrace();
 				break;
 
 			case "Dodavanje igraca":
-				((PageForAdministrator) pfa).dodajIgraca();
+				pageForAdministrator.dodajIgraca();
 				break;
 				
 			case "Izmena igraca":
-				((PageForAdministrator) pfa).izmeniIgraca();
+				pageForAdministrator.izmeniIgraca();
 				break;
 				
 			case "Brisanje igraca":
-				((PageForAdministrator) pfa).obrisiIgraca();
+				pageForAdministrator.obrisiIgraca();
 				break;
 									
 			case "Prikaz hala":
-				((PageForAdministrator) pfa).prikaziHale();
-				break;
-	
-			case "Sign out":
-				//((Page) pfa).signOut();
+				pageForAdministrator.prikaziHale();
 				break;
 				
 			default:
