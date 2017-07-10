@@ -9,7 +9,9 @@ import javax.swing.JPanel;
 import model.Aplikacija;
 import model.Cetvrtina;
 import model.DataBase;
+import model.Igrac;
 import model.IzvestajUtakmice;
+import model.Klub;
 import model.StatistikaIgraca;
 import model.Sut;
 import model.User;
@@ -47,7 +49,7 @@ public class Controller {
 			
 			if (user.getAdministrator())
 			{
-				page = new PageForAdministrator(aplikacija);
+				page = new PageForAdministrator(aplikacija, this);
 				mainWindow.setPageForAdministrator((PageForAdministrator)page);
 				mainWindow.putPageForAdminOnScreen();
 				((PageForAdministrator) page).fillPage(user);
@@ -270,5 +272,45 @@ public class Controller {
 		
 	}
 
+	public void dodavanjeIgraca(String id, String ime, String prezime, String visina, String tezina, Klub klub, String pathFotografija) 
+	{
+		String sqlOsoba = "insert into osoba values(" + id + ", " + "'" + ime  + "'" + ", " + "'" + prezime  + "'" + ")";
+		String sqlIgrac = "insert into igrac values(" + id + ", " + visina + ", " + tezina + ", " +  (new Integer(klub.getIdKluba())).toString()  + ", " + "'" + pathFotografija + "'" + ")";
+		try {
+			DataBase.statement.executeUpdate(sqlOsoba);
+			DataBase.statement.executeUpdate(sqlIgrac);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
+	public void izmenaIgraca(Igrac igrac, String ime, String prezime, String visina, String tezina, Klub klub, String pathFotografija) {
+		String sqlOsoba = "update osoba set " + "ime=" + "'" + ime  + "'" + ", " + "prezime=" + "'" + prezime  + "'" 
+				+ " where idosobe=" + (new Integer(igrac.getId())).toString();
+		String sqlIgrac = "update igrac set " + "visina=" + visina + ", " + "tezina=" + tezina + ", " +
+				"idkluba=" + (new Integer(klub.getIdKluba())).toString() + ", " + 
+				"putanjadofotografije=" + "'" + pathFotografija + "'" + " where " +
+				"idigraca=" + (new Integer(igrac.getId())).toString();
+		try {
+			DataBase.statement.executeUpdate(sqlOsoba);
+			DataBase.statement.executeUpdate(sqlIgrac);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void brisanjeIgraca(Igrac igrac)
+	{
+		String sqlIgrac = "delete from igrac where idigraca=" + (new Integer(igrac.getId())).toString();
+		String sqlOsoba = "delete from osoba where idosobe=" + (new Integer(igrac.getId())).toString();
+		try {
+			DataBase.statement.executeUpdate(sqlIgrac);
+			DataBase.statement.executeUpdate(sqlOsoba);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

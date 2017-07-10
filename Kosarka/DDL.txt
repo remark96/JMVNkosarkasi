@@ -1,0 +1,209 @@
+drop table UTAKMICA;
+drop table DELEGAT;
+drop table IGRAC;
+drop table SUDIJA;
+drop table TRENER;
+drop table KLUB;
+drop table HALA;
+drop table KORISNIK;
+drop table OSOBA;
+
+CREATE TABLE HALA (
+		NAZIV VARCHAR2(50) NOT NULL,
+		MESTO VARCHAR2(50),
+		ADRESA VARCHAR2(100),
+		
+		constraint PK_HALA primary key (NAZIV)
+);
+
+CREATE TABLE KLUB (
+		IDKLUBA integer NOT NULL,
+		IMEKLUBA VARCHAR2(50),
+		NAZIVHALE VARCHAR2(50),
+		PUTANJADOFOTOGRAFIJE varchar2(100),
+		
+		constraint PK_KLUB primary key (IDKLUBA),
+		constraint FK_KLUB foreign key (NAZIVHALE) references HALA (NAZIV),
+		constraint UN_KLUB unique (IMEKLUBA)		
+);
+
+CREATE TABLE OSOBA (
+		IDOSOBE integer NOT NULL,
+		IME VARCHAR2(30),
+		PREZIME VARCHAR2(30),
+		
+		constraint PK_OSOBA primary key (IDOSOBE)
+);
+
+CREATE TABLE DELEGAT (
+		IDDELEGATA integer NOT NULL,
+		
+		constraint PK_DELEGAT primary key (IDDELEGATA),
+		constraint FK_DAELAGAT foreign key (IDDELEGATA) references OSOBA (IDOSOBE)
+);
+
+CREATE TABLE IGRAC (
+		IDIGRACA integer NOT NULL,
+		VISINA integer,
+		TEZINA integer,
+		IDKLUBA integer,
+		PUTANJADOFOTOGRAFIJE varchar2(100),		
+
+		constraint PK_IGRAC primary key (IDIGRACA),
+		constraint FK_IGRAC_O foreign key (IDIGRACA) references OSOBA (IDOSOBE),
+		constraint FK_IGRAC_K foreign key (IDKLUBA) references KLUB (IDKLUBA),
+		constraint CH_IGRAC_V check (VISINA > 0),
+		constraint CH_IGRAC_T check (TEZINA > 0)
+);
+
+CREATE TABLE SUDIJA (
+		IDSUDIJE integer NOT NULL,
+		
+		constraint PK_SUDIJA primary key (IDSUDIJE),
+		constraint FK_SUDIJA foreign key (IDSUDIJE) references OSOBA (IDOSOBE)
+);
+
+CREATE TABLE TRENER (
+		IDTRENERA integer NOT NULL,
+		IDKLUBA integer,
+		PUTANJADOFOTOGRAFIJE varchar2(100),
+		
+		constraint PK_TRENER primary key (IDTRENERA),
+		constraint FK_TRENER_O foreign key (IDTRENERA) references OSOBA (IDOSOBE),
+		constraint FK_TRENER_K foreign key (IDKLUBA) references KLUB (IDKLUBA)
+);
+
+CREATE TABLE UTAKMICA (
+		IDUTAKMICE integer NOT NULL,
+		IDDOMACINA integer,
+		IDGOSTA integer,
+		NAZIVHALE VARCHAR2(50),
+		DATUMIVREME DATE,
+		IDDELEGATA integer,
+		
+		constraint PK_UTAKMICA primary key (IDUTAKMICE),
+		constraint FK_UTAKMICA_D foreign key (IDDOMACINA) references KLUB (IDKLUBA),
+		constraint FK_UTAKMICA_G foreign key (IDGOSTA) references KLUB (IDKLUBA),
+		constraint FK_UTAKMICA_H foreign key (NAZIVHALE) references HALA (NAZIV),
+		constraint FK_UTAKMICA_DEL foreign key (IDDELEGATA) references DELEGAT(IDDELEGATA)
+);
+
+CREATE TABLE KORISNIK (
+		USERNAME VARCHAR2(30) NOT NULL,
+		PASSWORD VARCHAR2(30) NOT NULL,
+		ADMINISTRATOR NUMBER(1 , 0),
+		
+		constraint PK_KORISNIK primary key (USERNAME, PASSWORD),
+		constraint CH_KORISNIK check (ADMINISTRATOR = 0 or ADMINISTRATOR = 1)
+);
+
+create table KLUB_IGRAC (
+	IDKLUBA integer,
+	IDIGRACA integer,
+	
+	constraint PK_KLUB_IGRAC primary key (IDKLUBA, IDIGRACA),
+	constraint FK_KLUB_IGRAC_K foreign key (IDKLUBA) references KLUB (IDKLUBA),
+	constraint FK_KLUB_IGRAC_I foreign key (IDIGRACA) references IGRAC (IDIGRACA)
+); 
+
+create table KLUB_TRENER (
+	IDKLUBA integer,
+	IDTRENERA integer,
+	
+	constraint PK_KLUB_TRENER primary key (IDKLUBA, IDTRENERA),
+	constraint FK_KLUB_TRENER_K foreign key (IDKLUBA) references KLUB (IDKLUBA),
+	constraint FK_KLUB_TRENER_T foreign key (IDTRENERA) references TRENER (IDTRENERA)
+); 
+
+create table UTAKMICA_SUDIJA (
+	IDUTAKMICE integer not null,
+	IDSUDIJE integer not null,
+	
+	constraint PK_UTAKMICA_SUDIJA primary key (IDUTAKMICE, IDSUDIJE),
+	constraint FK_UTAKMICA_SUDIJA_U foreign key (IDUTAKMICE) references UTAKMICA (IDUTAKMICE),
+	constraint FK_UTAKMICA_SUDIJA_S foreign key (IDSUDIJE) references SUDIJA (IDSUDIJE)
+);
+
+create table STATISTIKA_IGRACA (
+	IDIGRACA integer not null,
+	IDUTAKMICE integer not null,
+	AKTUELNOSTANJE integer,
+	
+	constraint PK_STATISTIKA_IGRACA primary key (IDIGRACA, IDUTAKMICE),
+	constraint FK_STATISTIKA_IGRACA_S foreign key (IDIGRACA) references IGRAC (IDIGRACA),
+	constraint FK_STATISTIKA_IGRACA_I foreign key (IDUTAKMICE) references UTAKMICA (IDUTAKMICE),
+	constraint CH_STATISTIKA_IGRACA check (AKTUELNOSTANJE = 0 or AKTUELNOSTANJE = 1 or AKTUELNOSTANJE = 2)
+);
+
+create table STATISTIKA_TRENERA (
+	IDTRENERA integer not null,
+	IDUTAKMICE integer not null,
+	TEHNICKEGRESKE integer,
+	IZBACEN integer,
+	
+	constraint PK_STATISTIKA_TRENERA primary key (IDUTAKMICE, IDTRENERA),
+	constraint FK_STATISTIKA_TRENERA_T foreign key (IDTRENERA) references TRENER (IDTRENERA),
+	constraint FK_STATISTIKA_TRENERA_I foreign key (IDUTAKMICE) references UTAKMICA (IDUTAKMICE),
+	constraint CH_STATISTIKA_TRENERA_T check (TEHNICKEGRESKE <= 2),
+	constraint CH_STATISTIKA_TRENERA_I check (IZBACEN = 0 or IZBACEN = 1)
+);
+
+create table CETVRTINA (
+	REDBR integer not null,
+	IDIGRACA integer not null,
+	IDUTAKMICE integer not null,
+	
+	sutevi varchar2(200) default '1-1:0/0,2:0/0,3:0/0;2-1:0/0,2:0/0,3:0/0;3-1:0/0,2:0/0,3:0/0;4-1:0/0,2:0/0,3:0/0;5-1:0/0,2:0/0,3:0/0;6-1:0/0,2:0/0,3:0/0',
+	asistencije integer default 0,
+	def_skokovi integer default 0,
+	ofa_skokovi integer default 0,
+	licne_greske1 integer default 0,
+	licne_greske2 integer default 0,
+	licne_greske3 integer default 0,
+	nesportske_greske1 integer default 0,
+	nesportske_greske2 integer default 0,
+	nesportske_greske3 integer default 0,
+	tehnicke_greske integer default 0,
+	blokade integer default 0,
+	koraci integer default 0,
+	duplaLopta integer default 0,
+	loseDodavanje integer default 0,
+	loseHvatanje integer default 0,
+	loseVodjenje integer default 0,
+	triSecUReketu integer default 0,
+	petSecPrilikomIzvodjenjaAuta integer default 0,
+	osamSecProsloPrePrelaSredTer integer default 0,
+	prekoPola integer default 0,
+	faulUNapaduSLoptom integer default 0,
+	faulUNapaduBezLopte integer default 0,
+	faulUOdbrani integer default 0,
+	
+	constraint PK_CETVRTINA primary key (REDBR, IDIGRACA, IDUTAKMICE),
+	constraint FK_CETVRTINA_I foreign key (IDIGRACA) references IGRAC (IDIGRACA),
+	constraint FK_CETVRTINA_U foreign key (IDUTAKMICE) references UTAKMICA (IDUTAKMICE),
+	constraint CH_CETVRTINA check (REDBR = 1 or REDBR = 2 or REDBR = 3 or REDBR = 4),
+	constraint CH_VREDNOSTI check(
+	asistencije >= 0 and
+	def_skokovi >= 0 and
+	ofa_skokovi >= 0 and
+	licne_greske1 >= 0 and
+	licne_greske2 >= 0 and
+	licne_greske3 >= 0 and
+	nesportske_greske1 >= 0 and
+	nesportske_greske2 >= 0 and
+	nesportske_greske3 >= 0 and
+	tehnicke_greske >= 0 and
+	blokade >= 0 and
+	koraci >= 0 and
+	duplaLopta >= 0 and
+	loseDodavanje >= 0 and
+	loseHvatanje >= 0 and
+	loseVodjenje >= 0 and
+	triSecUReketu >= 0 and
+	petSecPrilikomIzvodjenjaAuta >= 0 and
+	osamSecProsloPrePrelaSredTer >= 0 and
+	prekoPola >= 0 and
+	faulUNapaduSLoptom >= 0 and
+	faulUNapaduBezLopte >= 0 and
+	faulUOdbrani >= 0)
+);
