@@ -61,4 +61,10 @@ public class IzvestajUtakmice {
 		
 		return null;
 	}
+	
+	@Override
+	public String toString() {
+		if (utakmica.getIdUtakmice()==0) return "";
+		return utakmica.getDomaciKlub().getImeKluba()+" - "+utakmica.getGostujuciKlub().getImeKluba()+" , "+utakmica.getDate();
+	}
 }

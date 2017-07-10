@@ -247,7 +247,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 		oldMouseX = e.getX();
 		oldMouseY = e.getY();
 		
-		PageForNewGame pageForNewGame = ((MainWindow) SwingUtilities.windowForComponent(this)).getPageForNewGame();
+		PageForNewGame pageForNewGame = ((MainWindow) SwingUtilities.windowForComponent(this)).getPageForUser().getPageForNewGame();
 		
 		if (selectedGraphicalElement != null) {
 			selectedGraphicalElement.setDataPanel(pageForNewGame.getDataPanel());
@@ -287,7 +287,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 	public void mouseReleased(MouseEvent arg0) {
 		//selectedGraphicalElement = null;
 		
-		PageForNewGame pageForNewGame = ((MainWindow) SwingUtilities.windowForComponent(this)).getPageForNewGame();
+		PageForNewGame pageForNewGame = ((MainWindow) SwingUtilities.windowForComponent(this)).getPageForUser().getPageForNewGame();
 		
 		if (selectedGraphicalElement != null) {
 			boolean condition = existsInTeam(hostPlayers);

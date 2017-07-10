@@ -21,6 +21,7 @@ import model.Sut;
 import model.User;
 import model.VrstaSuta;
 import view.CustomNewGame;
+import view.CustomNewReport;
 import view.DialogForKvadrant;
 import view.DialogWindow;
 import view.DrugaStranaCNP;
@@ -118,19 +119,19 @@ public class Controller {
 	}
 
 	public void processReportsEvent() {
-		// TODO Auto-generated method stub
+		mainWindow.setCustomNewReport(new CustomNewReport(this));
+		mainWindow.getCustomNewReport().setVisible(true);
 		
 	}
 
 	public void processDugmeZaCetvrtinuEvent() {
-		PageForNewGame pageForNewGame = mainWindow.getPageForNewGame();
+		PageForNewGame pageForNewGame = mainWindow.getPageForUser().getPageForNewGame();
 		
 		if (pageForNewGame.getDugmeZaCetvrtinu().getText().equals("Kraj")) {
 			int opcija = JOptionPane.showOptionDialog(pageForNewGame, "Da li zelite sad da pogledate upravo kreirani izvestaj utakmice?", "Prikazivanje izvestaja utakmice...", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 			
 			if (opcija == 0) {
-				IzvestajUtakmice aktuelniIzvestaj = aplikacija.getAktuelniIzvestajUtakmice();
-				mainWindow.setPageForReports(new PageForReports(this, aktuelniIzvestaj));
+				mainWindow.getPageForUser().setPageForReports(new PageForReports(this));
 				mainWindow.putPageForReportsOnScreen();
 			}
 			else if (opcija == 1) mainWindow.putPageForUserOnScreen();
@@ -200,7 +201,7 @@ public class Controller {
 
 	public void processSpinnerEvent(int indeksAtributa, Spinner spinner) {
 		IzvestajUtakmice aktuelniIzvestaj = aplikacija.getAktuelniIzvestajUtakmice();
-		PageForNewGame pageForNewGame = mainWindow.getPageForNewGame();
+		PageForNewGame pageForNewGame = mainWindow.getPageForUser().getPageForNewGame();
 		GraphicalElement selected = pageForNewGame.getWestpanel().selectedGraphicalElement;
 		
 		StatistikaIgraca statistikaIgraca;
@@ -373,7 +374,7 @@ public class Controller {
 	}
 
 	public void processOkButtonDialogForKvadrant() {
-		DialogForKvadrant dialog = mainWindow.getPageForNewGame().getDialogForKvadrant();
+		DialogForKvadrant dialog = mainWindow.getPageForUser().getPageForNewGame().getDialogForKvadrant();
 		
 		for (int i = 0; i < dialog.getRadioButtons().length; i++) {
 			if (dialog.getRadioButtons()[i].isSelected()) {
@@ -470,9 +471,28 @@ public class Controller {
 //		progressBar.setToolTipText("Postavljanje terena...");
 		
 		
-		mainWindow.setPageForNewGame(new PageForNewGame(this));
+		mainWindow.getPageForUser().setPageForNewGame(new PageForNewGame(this));
 		mainWindow.putPageForNewGamerOnScreen();
 		
+	}
+	
+	public void processOkForReportEvent() {
+		CustomNewReport customNewReport = mainWindow.getCustomNewReport();
+		
+		mainWindow.getCustomNewReport().setVisible(false);
+		int index=mainWindow.getCustomNewReport().getComboUtakmica().getSelectedIndex();
+		IzvestajUtakmice izvestajUtakmice = customNewReport.getComboUtakmica().getItemAt(index);
+		
+		aplikacija.setAktuelniIzvestajUtakmice(izvestajUtakmice);
+		PageForReports page = new PageForReports(this);
+		mainWindow.getPageForUser().setPageForReports(page);
+		mainWindow.putPageForReportsOnScreen();
+		//((PageForReports) page).fillPage(findUser());
+
+	}
+	
+	public void processCancelForReportEvent() {
+		mainWindow.getCustomNewReport().setVisible(false);
 	}
 	
 	private void postaviPrvuPostavu(int[] prvaPostava, ArrayList<StatistikaIgraca> statistikeIgraca) {

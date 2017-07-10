@@ -1,16 +1,16 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import controller.Controller;
+import model.DataBase;
 import model.IzvestajUtakmice;
-import model.Utakmica;
 
 @SuppressWarnings("serial")
 public class PageForReports extends JPanel {
@@ -22,34 +22,67 @@ public class PageForReports extends JPanel {
 	private PageForStatistikeIgraca pageForStatistikeDomacihIgraca; 
 	private PageForStatistikeIgraca pageForStatistikeGostujucihIgraca; 
 	
+	private PageForStatistikaEkipe pageForStatistikaDomaceEkipe;
+	private PageForStatistikaEkipe pageForStatistikaGostujuceEkipe;
+	
+	private PageForStatistikaTrenera pageForStatistikaDomacegTrenera;
+	private PageForStatistikaTrenera pageForStatistikaGostujucegTrenera;
+	
+	private PageBasicInformationForUtakmica pageBasicInformationForUtakmica;
+	
+	
 	JComboBox<String> comboBoxIgraci;
 	
 	private Controller controller;
 	private VerticalMenuBar vmb;
 	
-	public PageForReports(Controller controller, IzvestajUtakmice izvestajUtakmice) {
+	public PageForReports(Controller controller) {
 		this.controller = controller;
 		
-		this.northPanel = new JPanel(new GridLayout(6, 5));
 		this.westPanel = new JPanel(new BorderLayout());
+		IzvestajUtakmice izvestajUtakmice=controller.aplikacija.getAktuelniIzvestajUtakmice();
 		
-		vmb = new VerticalMenuBar(controller, this);
+		this.pageForStatistikeDomacihIgraca = new PageForStatistikeIgraca(izvestajUtakmice.getStatistikaDomacihIgraca());
+		this.pageForStatistikeGostujucihIgraca = new PageForStatistikeIgraca(izvestajUtakmice.getStatistikaGostujucihIgraca());
+		
+		this.pageForStatistikaDomaceEkipe=new PageForStatistikaEkipe(izvestajUtakmice.getUtakmica().getDomaciKlub().getImeKluba());
+		this.pageForStatistikaGostujuceEkipe=new PageForStatistikaEkipe(izvestajUtakmice.getUtakmica().getGostujuciKlub().getImeKluba());
+		
+		this.pageForStatistikaDomacegTrenera=new PageForStatistikaTrenera(izvestajUtakmice.getUtakmica().getDomaciKlub().getTrener().toString());
+		this.pageForStatistikaGostujucegTrenera=new PageForStatistikaTrenera(izvestajUtakmice.getUtakmica().getGostujuciKlub().getTrener().toString());
+		
+		pageBasicInformationForUtakmica = new PageBasicInformationForUtakmica(izvestajUtakmice.getUtakmica().toString(), izvestajUtakmice.getUtakmica().getHala().toString(), DataBase.sdf.format(izvestajUtakmice.getUtakmica().getDate()));
+		
+		
+		vmb = new VerticalMenuBar(this);
+		funcForWestPanel();
+		vmb.getMenu(0).addMenuListener(new MenuListener() {
+			
+			@Override
+			public void menuSelected(MenuEvent e) {
+				putPagePageBasicInformationForUtakmica();
+				
+			}
+			
+			@Override
+			public void menuDeselected(MenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void menuCanceled(MenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		
 		westPanel.add(vmb, BorderLayout.NORTH);
 		
-		Utakmica utakmica = izvestajUtakmice.getUtakmica();
-		
-		comboBoxIgraci = new JComboBox<String>();
-		comboBoxIgraci.addItem(utakmica.getDomaciKlub().getImeKluba());
-		comboBoxIgraci.addItem(utakmica.getGostujuciKlub().getImeKluba());
-		
-		for (int i = 0; i < 5; i++) northPanel.add(new JLabel(""));
-		northPanel.add(new JLabel("")); northPanel.add(new JLabel("")); northPanel.add(comboBoxIgraci); northPanel.add(new JLabel("")); northPanel.add(new JLabel(""));
-		for (int i = 0; i < 20; i++) northPanel.add(new JLabel(""));
-			
-		this.centerPanel = new PageForStatistikeIgraca(izvestajUtakmice.getStatistikaDomacihIgraca());
+		this.centerPanel = pageBasicInformationForUtakmica;
 		add(centerPanel, BorderLayout.CENTER);
 		
-		add(northPanel, BorderLayout.NORTH);
 		add(westPanel, BorderLayout.WEST);
 		
 		
@@ -63,7 +96,7 @@ public class PageForReports extends JPanel {
 			menu = new JMenu(menusStr[i]);
 			for (int j = 0; j < items[i].length; j++) {
 				System.out.println(items[i].length);
-				menuItem = new MenuItem(items[i][j], this);
+				menuItem = new MenuItem(items[i][j], this, controller, vmb);
 				menuItem.addActionListener();
 				menu.add(menuItem);
 			}
@@ -75,16 +108,6 @@ public class PageForReports extends JPanel {
 		westPanel.repaint();
 	
 	}
-	
-	public void funcForWestPanel() {
-		String[] menusStr = { "Statistika ekipa", "Statistika igraca", "Statistika trenera", "Statistika tima" };
-		String[][] items = { { "Statistika domace ekipe", "Statistika gostujuce ekipe" },
-				{ "Igrac domace ekipe", "Igrac gostujuce ekipe" }, { "Trener domace ekipe", "Trener gostujuce ekipe" },
-				{ "Prikazi statistiku tima" }, };
-
-		putMenuBar(menusStr, items);
-	}
-
 
 
 	public JPanel getNorthPanel() {
@@ -179,4 +202,88 @@ public class PageForReports extends JPanel {
 		this.vmb = vmb;
 	}
 	
+	public void putPageForStatistikaIgraca(PageForStatistikeIgraca pageForStatistikeIgraca){
+		remove(centerPanel);
+		centerPanel=pageForStatistikeIgraca;
+		add(centerPanel,BorderLayout.CENTER);
+		refresh();
+		
+	}
+	public void putPageForStatistikaEkipe(PageForStatistikaEkipe pageForStatistikaEkipe){
+		remove(centerPanel);
+		centerPanel=pageForStatistikaEkipe;
+		add(centerPanel,BorderLayout.CENTER);
+		refresh();
+		
+	}
+	public void putPageForStatistikaTrenera(PageForStatistikaTrenera pageForStatistikaTrenera){
+		remove(centerPanel);
+		centerPanel=pageForStatistikaTrenera;
+		add(centerPanel,BorderLayout.CENTER);
+		refresh();
+		
+	}
+	public void putPagePageBasicInformationForUtakmica(){
+		remove(centerPanel);
+		centerPanel = pageBasicInformationForUtakmica;
+		add(centerPanel,BorderLayout.CENTER);
+		refresh();
+		
+	}
+	
+	public void funcForWestPanel() {
+		String[] menusStr = { "Osnovni podaci za utakmicu","Statistika ekipa", "Statistika igraca", "Statistika trenera" };
+		String[][] items = { {}, { "Statistika domace ekipe", "Statistika gostujuce ekipe" },
+				{ "Igrac domace ekipe", "Igrac gostujuce ekipe" }, { "Trener domace ekipe", "Trener gostujuce ekipe" },
+				};
+
+		putMenuBar(menusStr, items);
+	}
+
+	public PageForStatistikaEkipe getPageForStatistikaDomaceEkipe() {
+		return pageForStatistikaDomaceEkipe;
+	}
+
+	public void setPageForStatistikaDomaceEkipe(PageForStatistikaEkipe pageForStatistikaDomaceEkipe) {
+		this.pageForStatistikaDomaceEkipe = pageForStatistikaDomaceEkipe;
+	}
+
+	public PageForStatistikaEkipe getPageForStatistikaGostujuceEkipe() {
+		return pageForStatistikaGostujuceEkipe;
+	}
+
+	public void setPageForStatistikaGostujuceEkipe(PageForStatistikaEkipe pageForStatistikaGostujuceEkipe) {
+		this.pageForStatistikaGostujuceEkipe = pageForStatistikaGostujuceEkipe;
+	}
+
+	public PageForStatistikaTrenera getPageForStatistikaDomacegTrenera() {
+		return pageForStatistikaDomacegTrenera;
+	}
+
+	public void setPageForStatistikaDomacegTrenera(PageForStatistikaTrenera pageForStatistikaDomacegTrenera) {
+		this.pageForStatistikaDomacegTrenera = pageForStatistikaDomacegTrenera;
+	}
+
+	public PageForStatistikaTrenera getPageForStatistikaGostujucegTrenera() {
+		return pageForStatistikaGostujucegTrenera;
+	}
+
+	public void setPageForStatistikaGostujucegTrenera(PageForStatistikaTrenera pageForStatistikaGostujucegTrenera) {
+		this.pageForStatistikaGostujucegTrenera = pageForStatistikaGostujucegTrenera;
+	}
+
+	public PageBasicInformationForUtakmica getPageBasicInformationForUtakmica() {
+		return pageBasicInformationForUtakmica;
+	}
+
+	public void setPageBasicInformationForUtakmica(PageBasicInformationForUtakmica pageBasicInformationForUtakmica) {
+		this.pageBasicInformationForUtakmica = pageBasicInformationForUtakmica;
+	}
+
+	public void refresh() {
+		revalidate();
+		repaint();
+	}
+
 }
+

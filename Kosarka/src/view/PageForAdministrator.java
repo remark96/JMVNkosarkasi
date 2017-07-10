@@ -77,7 +77,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 		northPanel.add(name);
 		northPanel.add(nameOfUser);
 		
-		vmb = new VerticalMenuBar(controller, this);
+		vmb = new VerticalMenuBar(this);
 	
 		westPanel.add(vmb, BorderLayout.NORTH);
 		
@@ -400,7 +400,7 @@ public class PageForAdministrator extends JPanel implements ActionListener
 			menu = new JMenu(menusStr[i]);
 			for (int j = 0; j < items[i].length; j++) {
 				System.out.println(items[i].length);
-				menuItem = new MenuItem(items[i][j], this);
+				menuItem = new MenuItem(items[i][j], this, controller, vmb);
 				menuItem.addActionListener();
 				menu.add(menuItem);
 			}

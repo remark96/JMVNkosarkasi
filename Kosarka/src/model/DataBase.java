@@ -16,7 +16,7 @@ public class DataBase {
 	public static Statement statement;
 	static ResultSet resultSet;
 	
-	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
+	public static SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
 	
 	public static boolean initDB() {
 		try {

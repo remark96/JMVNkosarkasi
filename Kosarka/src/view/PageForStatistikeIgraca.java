@@ -44,4 +44,3 @@ public class PageForStatistikeIgraca extends JPanel {
 	public void setStatistikeIgraca(ArrayList<StatistikaIgraca> statistikeIgraca) { this.statistikeIgraca = statistikeIgraca; }
 	
 }
-

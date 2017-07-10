@@ -18,6 +18,9 @@ public class PageForRegularUser extends JPanel implements ActionListener {
 	private JButton newGame;
 	private JButton reports;
 	
+	private PageForNewGame pageForNewGame;
+	private PageForReports pageForReports;
+	
 	private Controller controller;
 	
 	
@@ -44,7 +47,23 @@ public class PageForRegularUser extends JPanel implements ActionListener {
 		for (int i = 0; i < 6; i++) add(new JLabel());
 	}
 
+	
+	public PageForReports getPageForReports() {
+		return pageForReports;
+	}
 
+	public void setPageForReports(PageForReports pageForReports) {
+		this.pageForReports = pageForReports;
+	}
+	
+	public PageForNewGame getPageForNewGame() {
+		return pageForNewGame;
+	}
+
+	public void setPageForNewGame(PageForNewGame pageForNewGame) {
+		this.pageForNewGame = pageForNewGame;
+	}
+	
 	public JButton getNewGame() { return newGame; }
 	public void setNewGame(JButton newGame) { this.newGame = newGame; }
 
@@ -61,5 +80,6 @@ public class PageForRegularUser extends JPanel implements ActionListener {
 		if (source == newGame) controller.processNewGameEvent();
         else if (source == reports) controller.processReportsEvent();
 	}
+	
 	
 }

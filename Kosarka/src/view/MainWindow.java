@@ -16,13 +16,11 @@ public class MainWindow extends JFrame {
 	
 	private HomePage homePage;
 	
-	private PageForNewGame pageForNewGame;
-	
-	private PageForReports pageForReports;
-	
 	private PageForAdministrator pageForAdministrator;
 	
 	private CustomNewGame customeNewGame;
+	
+	private CustomNewReport customNewReport;
 
 	private Controller controller;
 	
@@ -105,9 +103,6 @@ public class MainWindow extends JFrame {
 	
 	public HomePage getHomePage() { return homePage; }
 	public void setHomePage(HomePage homePage) { this.homePage = homePage; }
-
-	public PageForNewGame getPageForNewGame() { return pageForNewGame; }
-	public void setPageForNewGame(PageForNewGame pageForNewGame) { this.pageForNewGame = pageForNewGame; }
 	
 	public Controller getController() { return controller; }
 	public void setController(Controller controller) { this.controller = controller; }
@@ -142,13 +137,13 @@ public class MainWindow extends JFrame {
 	
 	public void putPageForReportsOnScreen() {
 		getContentPane().removeAll();
-		getContentPane().add(pageForReports, BorderLayout.CENTER);
+		getContentPane().add(pageForUser.getPageForReports(), BorderLayout.CENTER);
 		refresh();
 	}
 	
 	public void putPageForNewGamerOnScreen() {
 		getContentPane().removeAll();
-		getContentPane().add(pageForNewGame, BorderLayout.CENTER);
+		getContentPane().add(pageForUser.getPageForNewGame(), BorderLayout.CENTER);
 		refresh();
 	}
 	
@@ -165,14 +160,13 @@ public class MainWindow extends JFrame {
 		this.pageForAdministrator = pageForAdministrator;
 	}
 
-	public PageForReports getPageForReports() {
-		return pageForReports;
+	public CustomNewReport getCustomNewReport() {
+		return customNewReport;
 	}
 
-	public void setPageForReports(PageForReports pageForReports) {
-		this.pageForReports = pageForReports;
+	public void setCustomNewReport(CustomNewReport customNewReport) {
+		this.customNewReport = customNewReport;
 	}
-	
-	
 
+	
 }
