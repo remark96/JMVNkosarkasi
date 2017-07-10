@@ -12,27 +12,13 @@ import controller.Controller;
 @SuppressWarnings("serial")
 public class Spinner extends JSpinner implements ChangeListener {
 	private Controller controller;
-	
-	private int indeksAtributa;
-	
-	public int getIndeksAtributa() {
-		return indeksAtributa;
-	}
-
-	public void setIndeksAtributa(int indeksAtributa) {
-		this.indeksAtributa = indeksAtributa;
-	}
-
-	public String[] getImenaAtributa() {
-		return imenaAtributa;
-	}
-
-	public void setImenaAtributa(String[] imenaAtributa) {
-		this.imenaAtributa = imenaAtributa;
-	}
-
 	public static String[] imenaAtributa = {
-			"sutevi",
+			"pogdak_za_1",
+			"pogdak_za_2",
+			"pogdak_za_3",
+			"promasaj_za_1",
+			"promasaj_za_2",
+			"promasaj_za_3",
 			"asistencije",
 			"def_skokovi",
 			"ofa_skokovi",
@@ -58,8 +44,16 @@ public class Spinner extends JSpinner implements ChangeListener {
 			"faulUOdbrani"
 			}; 
 	
-	//DataBase db;
+	private int indeksAtributa;
 	
+	public int getIndeksAtributa() {
+		return indeksAtributa;
+	}
+
+	public void setIndeksAtributa(int indeksAtributa) {
+		this.indeksAtributa = indeksAtributa;
+	}
+
 	public Spinner(SpinnerNumberModel model, int indeksAtributa) {
 		super(model);
 		this.indeksAtributa = indeksAtributa;

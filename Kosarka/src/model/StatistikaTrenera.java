@@ -3,11 +3,13 @@ package model;
 import java.util.ArrayList;
 
 public class StatistikaTrenera {
+	private Trener trener;
 	private ArrayList<String> timeouts;
 	private int tehnickeGreske;
 	private boolean izbacen;
 	
-	public StatistikaTrenera() {
+	public StatistikaTrenera(Trener trener) {
+		this.trener = trener;
 		this.timeouts = new ArrayList<String>();
 		this.tehnickeGreske = 0;
 		this.izbacen = false;
@@ -25,7 +27,10 @@ public class StatistikaTrenera {
 	public int getTehnickeGreske() { return tehnickeGreske; }
 	public void setTehnickeGreske(int tehnickeGreske) { this.tehnickeGreske = tehnickeGreske; }
 	
-	public boolean isIzbacen() { return izbacen; }
+	public boolean getIzbacen() { return izbacen; }
 	public void setIzbacen(boolean izbacen) { this.izbacen = izbacen; }
+
+	public Trener getTrener() { return trener; }
+	public void setTrener(Trener trener) { this.trener = trener; }
 	
 }

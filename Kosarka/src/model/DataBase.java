@@ -18,7 +18,7 @@ public class DataBase {
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
 	
-	public static void  initDB() {
+	public static boolean initDB() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "JovoSunjka", "ftn");
@@ -27,17 +27,23 @@ public class DataBase {
 			//preparedStatment = connection.prepareStatement(sql)
 		}
 		catch (Exception e) {
-			
+			return false;
 		}
+		
+		return true;
 	}
 
-	public void zatvori() {
+	public static boolean zatvoriDB() {
 		try {
 			connection.close();
+			preparedStatment.close();
+			statement.close();
+			resultSet.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
+		
+		return false;
 	}
 	
 	/*
@@ -80,6 +86,49 @@ public class DataBase {
 		//return (ArrayList<User>) DbUtils.resultSetToNestedList(resultSet);
 	}
 
+	
+	public static Hala izaberiHalu(ArrayList<Hala> hale, String nazivHale) {
+		for (Hala hala : hale) {
+			if (hala.equals(nazivHale)) return hala;
+		}
+		
+		return null;
+	}
+
+	public static Sudija[] izaberiSudije(ArrayList<Sudija> sudijeLista, ArrayList<Integer> idSudija) {
+		Sudija[] sudije = new Sudija[3];
+		
+		int i = 0;
+		for (int j : idSudija) {
+			for (Sudija sudija : sudijeLista) {
+				if (sudija.equals(j)) {
+					sudije[i] = sudija;
+					break;
+				}
+			}
+			
+			i++;
+		}
+	
+		return sudije;
+	}
+
+	public static Delegat izaberiDelegata(ArrayList<Delegat> delegati, int id) {
+		for (Delegat delegat : delegati) {
+			if (delegat.equals(id)) return delegat;
+		}
+		
+		return null;
+	}
+
+	public static Klub izaberiKlub(ArrayList<Klub> klubovi, int id) {
+		for (Klub klub : klubovi) {
+			if (klub.equals(id)) return klub;
+		}
+		
+		return null;
+	}
+	
 	public static ArrayList<IzvestajUtakmice> readReports(ArrayList<Hala> hale, ArrayList<Klub> klubovi, ArrayList<Sudija> sudijeLista, ArrayList<Delegat> delegati) {
 		ArrayList<IzvestajUtakmice> izvestaji = new ArrayList<IzvestajUtakmice>();
 		
@@ -98,8 +147,8 @@ public class DataBase {
 			
 				 idsUtakmica.add(resultSet.getInt("idutakmice"));
 			
-				ucitaniKlubovi.add(Aplikacija.izaberiKlub(klubovi, resultSet.getInt("iddomacina")));
-				ucitaniKlubovi.add(Aplikacija.izaberiKlub(klubovi, resultSet.getInt("idgosta")));
+				ucitaniKlubovi.add(izaberiKlub(klubovi, resultSet.getInt("iddomacina")));
+				ucitaniKlubovi.add(izaberiKlub(klubovi, resultSet.getInt("idgosta")));
 				
 				delegatiZaUtakmice.add(resultSet.getInt("iddelegata"));
 				
@@ -122,9 +171,9 @@ public class DataBase {
 			IzvestajUtakmice izvestajUtakmice;
 			
 			for (int i = 0, j = 0;  i < sudijeZaUtakmice.size(); i++, j+=2) {
-				sudije = Aplikacija.izaberiSudije(sudijeLista, sudijeZaUtakmice.get(i));
-				delegat = Aplikacija.izaberiDelegata(delegati, delegatiZaUtakmice.get(i));
-				hala = Aplikacija.izaberiHalu(hale, haleZaUtakmice.get(i));
+				sudije = izaberiSudije(sudijeLista, sudijeZaUtakmice.get(i));
+				delegat = izaberiDelegata(delegati, delegatiZaUtakmice.get(i));
+				hala = izaberiHalu(hale, haleZaUtakmice.get(i));
 				
 				
 				
@@ -190,9 +239,10 @@ public class DataBase {
 				
 				aktuelnoStanjeInt = resultSet.getInt("aktuelnostanje");
 				switch (aktuelnoStanjeInt) {
-					case 0: aktuelnoStanje = new StanjeTeren(); break;
-					case 1: aktuelnoStanje = new StanjeKlupa(); break;
-					case 2: aktuelnoStanje = new StanjeIzbacen(); break;
+					case 0: aktuelnoStanje = new StanjeIgracKojiCeIgrati(); break;
+					case 1: aktuelnoStanje = new StanjeTeren(); break;
+					case 2: aktuelnoStanje = new StanjeKlupa(); break;
+					case 3: aktuelnoStanje = new StanjeIzbacen(); break;
 					default: break;
 				}
 				
@@ -339,7 +389,7 @@ public class DataBase {
 				resultSet.next(); 
 				Trener trener = new Trener(idsTrenera.get(i), resultSet.getString("ime"), resultSet.getString("prezime"), putanjeDoFotografijaTrenera.get(i));
 				
-				Hala hala = Aplikacija.izaberiHalu(hale, haleZaKlubove.get(i));
+				Hala hala = izaberiHalu(hale, haleZaKlubove.get(i));
 				
 				klubovi.add(new Klub(idsKlubova.get(i), imenaKlubova.get(i), igraci, trener, hala, putanjeDoFotografijaKlubova.get(i)));
 			}
@@ -429,26 +479,130 @@ public class DataBase {
 		}
 	}
 
-	public static void writeNoviIzvestajUtakmice(IzvestajUtakmice aktuelniIzvestajUtakmice) {
+	public static boolean writeNoviIzvestajUtakmice(IzvestajUtakmice aktuelniIzvestajUtakmice) {
 		Utakmica utakmica = aktuelniIzvestajUtakmice.getUtakmica();
+		StatistikaTrenera statistikaDomacegTrenera = aktuelniIzvestajUtakmice.getStatistikaDomacegTrenera();
+		StatistikaTrenera statistikaGostujucegTrenera = aktuelniIzvestajUtakmice.getStatistikaGostujucegTrenera();
+		
+		ArrayList<StatistikaIgraca> statistikaDomacihIgraca = aktuelniIzvestajUtakmice.getStatistikaDomacihIgraca();
+		ArrayList<StatistikaIgraca> statistikaGostujucihIgraca = aktuelniIzvestajUtakmice.getStatistikaGostujucihIgraca();
+	
+		String sql;
+		
+		try {
+			writeUtakmica(utakmica);
+			
+			writeStatistikaIgraca(statistikaDomacihIgraca, utakmica.getIdUtakmice());
+			writeStatistikaIgraca(statistikaGostujucihIgraca, utakmica.getIdUtakmice());
+			
+			int izbacen;
+			if (statistikaDomacegTrenera.getIzbacen()) izbacen = 1;
+			else izbacen = 0;
+			sql = "insert into  STATISTIKA_TRENERA values (" + statistikaDomacegTrenera.getTrener().getId() + ", " + utakmica.getIdUtakmice() + ", " + statistikaDomacegTrenera.getTehnickeGreske() + ", " + izbacen + ")";
+			statement.executeUpdate(sql);
+			
+			if (statistikaGostujucegTrenera.getIzbacen()) izbacen = 1;
+			else izbacen = 0;
+			sql = "insert into  STATISTIKA_TRENERA values (" + statistikaGostujucegTrenera.getTrener().getId() + ", " + utakmica.getIdUtakmice() + ", " + statistikaGostujucegTrenera.getTehnickeGreske() + ", " + izbacen + ")";
+			statement.executeUpdate(sql);
+			
+			
+			
+		
+		} catch (SQLException e) {
+			return false;
+			
+		}
+		
+		return true;
+	}
+	
+	private static void writeStatistikaIgraca(ArrayList<StatistikaIgraca> statistikaIgraca, int idUtakmice) throws SQLException {
+		String sql;
+		ArrayList<Cetvrtina> cetvrtine;
+		Cetvrtina cetvrtina;
+		int idIgraca;
+		String strSutevi;
+		
+		for (int i = 0; i < statistikaIgraca.size(); i++) {
+			sql = "insert into  STATISTIKA_IGRACA values (" + statistikaIgraca.get(i).getIgrac().getId() + ", " + idUtakmice + ", " + statistikaIgraca.get(i).getAktuelnoStanje().getTip() + ")";
+			statement.executeUpdate(sql);
+			
+			idIgraca = statistikaIgraca.get(i).getIgrac().getId();
+			cetvrtine = statistikaIgraca.get(i).getCetvrtine();
+			for (int j = 0; j < cetvrtine.size() ; j++) {
+				cetvrtina = cetvrtine.get(j);
+				strSutevi = kreirajStringZaSuteve(cetvrtina.getSutevi());
+				
+				sql = "insert into  CETVRTINA values (" + (j+1) + ", " + idIgraca + ", " + idUtakmice + ", '" + strSutevi + "', " 
+				+ cetvrtina.getAsistencije() + ", " + cetvrtina.getDef_skokovi() + ", " +  cetvrtina.getOfa_skokovi() + ", " 
+				+ cetvrtina.getLicne_greske1() + ", " + cetvrtina.getLicne_greske2() + ", " + cetvrtina.getLicne_greske3() + ", " 
+				+ cetvrtina.getNesportske_greske1() + ", " + cetvrtina.getNesportske_greske2() + ", " + cetvrtina.getNesportske_greske3() 
+				+ ", " + cetvrtina.getTehnicke_greske() + ", " + cetvrtina.getBlokade() + ", " + cetvrtina.getKoraci() + ", " 
+				+ cetvrtina.getDuplaLopta() + ", " + cetvrtina.getLoseDodavanje() + ", " + cetvrtina.getLoseHvatanje() + ", " 
+				+ cetvrtina.getLoseVodjenje() + ", " + cetvrtina.getTriSecUReketu() + ", " + cetvrtina.getPetSecPrilikomIzvodjenjaAuta() + ", " 
+				+ cetvrtina.getOsamSecProsloPrePrelaskaSredineTerena() + ", " + cetvrtina.getPrekoPola() + ", " + cetvrtina.getFaulUNapaduSLoptom() 
+				+ ", " + cetvrtina.getFaulUNapaduBezLopte() + ", " + cetvrtina.getFaulUOdbrani()
+				+ ")";
+				
+				statement.executeUpdate(sql);
+			}
+		} 
+		
+	}
+	
+	private static String kreirajStringZaSuteve(ArrayList<Sut> sutevi) {
+		String suteviStr = "";
+		int sutZa1 = 0, sutZa2 = 0, sutZa3 = 0, pogociZa1 = 0, pogociZa2 = 0, pogociZa3 = 0;
+		for (int i = 1; i <= 6; i++) {
+			for (Sut sut : sutevi) {
+				if (sut.getKvadrant() == i) {
+					
+					switch (sut.getVrsta()) {
+						case jedanPoen:
+							if (sut.isPogodak()) pogociZa1++; 
+							sutZa1++;
+							break;
+							
+						case dvaPoena:
+							if (sut.isPogodak()) pogociZa2++; 
+							sutZa2++;
+							break;
+							
+						case triPoena:
+							if (sut.isPogodak()) pogociZa3++; 
+							sutZa3++;
+							break;
+		
+						default:
+							break;
+					}
+				}
+			}
+		
+			suteviStr += i + "-1:" + pogociZa1 + "/" + sutZa1 + "," + "2:" + pogociZa2 + "/" + sutZa2 + "," + "3:" + pogociZa3 + "/" + sutZa3 + ";";
+		}
+		
+		suteviStr = suteviStr.substring(0, suteviStr.length() - 1);
+		
+		return suteviStr;
+	}
+	
+	private static void writeUtakmica(Utakmica utakmica) throws SQLException {
 		Klub domacin = utakmica.getDomaciKlub();
 		Klub gost = utakmica.getGostujuciKlub();
 		Hala hala = utakmica.getHala();
+		Sudija[] sudije = utakmica.getSudije();
+		int idUtakmice = utakmica.getIdUtakmice();
 		
-		aktuelniIzvestajUtakmice.getStatistikaDomacihIgraca();
+		String sql = "insert into UTAKMICA values(" + idUtakmice + ", " + domacin.getIdKluba() + ", "
+				+ gost.getIdKluba() + ", '" + hala.getNaziv() + "', '" + sdf.format(utakmica.getDate()) + "', " + utakmica.getDelegat().id + ")" ;
+		statement.executeUpdate(sql);
 		
-		// nije zavrsena ova funkcija
-		//TODO
-		
-		try {
-			String sql = "insert into UTAKMICA values(" + utakmica.getIdUtakmice() + ", " + domacin.getIdKluba() + ", "
-					+ gost.getIdKluba() + ", '" + hala.getNaziv() + "', '" + sdf.format(utakmica.getDate()) + "', " + utakmica.getDelegat().id + ")" ;
-		
+		for (int i = 0; i < sudije.length; i++) {
+			sql = "insert into UTAKMICA_SUDIJA values(" + idUtakmice + ", " + sudije[i].getId() + ")";
 			statement.executeUpdate(sql);
-		
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
 	}
 }

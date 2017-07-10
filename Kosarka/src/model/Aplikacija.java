@@ -30,69 +30,39 @@ public class Aplikacija {
 		
 	}
 	
-	public void noviIzvestajUtakmice(int indexDomacegKluba, int indexGostujucegKluba, ArrayList<Integer> indexiSudija, int indexDelegata, int indexHale) {
-		int idUtakmice = DataBase.kreirajIdZaNovuUtakmicu();
-		Klub domaciKlub = klubovi.get(indexDomacegKluba);
-		Klub gostujuciKlub = klubovi.get(indexGostujucegKluba);
-		
-		Sudija[] sudijeZaUtakmicu = new Sudija[indexiSudija.size()] ;
-		for (int i = 0; i < indexiSudija.size(); i++) sudijeZaUtakmicu[i] = sudije.get(indexiSudija.get(i));
-		
-		Delegat delegat = delegati.get(indexDelegata);
-		Hala hala = hale.get(indexHale);
-		Date date = new Date();
-		
-		Utakmica utakmica = new Utakmica(idUtakmice, domaciKlub, gostujuciKlub, sudijeZaUtakmicu, delegat, hala, date);
-		
-		aktuelniIzvestajUtakmice = new IzvestajUtakmice(utakmica);
-	}
-	
-	public static Hala izaberiHalu(ArrayList<Hala> hale, String nazivHale) {
-		for (Hala hala : hale) {
-			if (hala.equals(nazivHale)) return hala;
-		}
-		
-		return null;
-	}
-
-	public static Sudija[] izaberiSudije(ArrayList<Sudija> sudijeLista, ArrayList<Integer> idSudija) {
-		Sudija[] sudije = new Sudija[3];
-		
-		int i = 0;
-		for (int j : idSudija) {
-			for (Sudija sudija : sudijeLista) {
-				if (sudija.equals(j)) {
-					sudije[i] = sudija;
-					break;
-				}
-			}
+	public boolean noviIzvestajUtakmice(int indexDomacegKluba, int indexGostujucegKluba, ArrayList<Integer> indexiSudija, int indexDelegata, int indexHale) {
+		try {
+			int idUtakmice = DataBase.kreirajIdZaNovuUtakmicu();
+			Klub domaciKlub = klubovi.get(indexDomacegKluba);
+			Klub gostujuciKlub = klubovi.get(indexGostujucegKluba);
 			
-			i++;
-		}
-	
-		return sudije;
-	}
-
-	public static Delegat izaberiDelegata(ArrayList<Delegat> delegati, int id) {
-		for (Delegat delegat : delegati) {
-			if (delegat.equals(id)) return delegat;
-		}
-		
-		return null;
-	}
-
-	public static Klub izaberiKlub(ArrayList<Klub> klubovi, int id) {
-		for (Klub klub : klubovi) {
-			if (klub.equals(id)) return klub;
+			Sudija[] sudijeZaUtakmicu = new Sudija[indexiSudija.size()] ;
+			for (int i = 0; i < indexiSudija.size(); i++) sudijeZaUtakmicu[i] = sudije.get(indexiSudija.get(i));
+			
+			Delegat delegat = delegati.get(indexDelegata);
+			Hala hala = hale.get(indexHale);
+			Date date = new Date();
+			
+			Utakmica utakmica = new Utakmica(idUtakmice, domaciKlub, gostujuciKlub, sudijeZaUtakmicu, delegat, hala, date);
+			
+			aktuelniIzvestajUtakmice = new IzvestajUtakmice(utakmica);
+		} catch (Exception e) {
+			return false;
 		}
 		
-		return null;
+		return true;
 	}
 
-	public void sacuvajNoviIzvestajUtakmice() {
-		izvestaji.add(aktuelniIzvestajUtakmice);
+	public boolean sacuvajNoviIzvestajUtakmice(IzvestajUtakmice izvestajUtakmice) {
+		try {
+			izvestaji.add(izvestajUtakmice);
+		} catch (NullPointerException e) {
+			return false;
+		}
 		
-		DataBase.writeNoviIzvestajUtakmice(aktuelniIzvestajUtakmice);
+		boolean uslov = DataBase.writeNoviIzvestajUtakmice(izvestajUtakmice);
+		if (uslov) return true;
+		return false;
 	}
 
 	public ArrayList<User> getUsers() { return users; }
@@ -117,12 +87,7 @@ public class Aplikacija {
 	public IzvestajUtakmice getAktuelniIzvestajUtakmice() { return aktuelniIzvestajUtakmice; }
 	public void setAktuelniIzvestajUtakmice(IzvestajUtakmice aktuelniIzvestajUtakmice) { this.aktuelniIzvestajUtakmice = aktuelniIzvestajUtakmice; }
 
-	public ArrayList<Igrac> getIgraci() {
-		return igraci;
-	}
-
-	public void setIgraci(ArrayList<Igrac> igraci) {
-		this.igraci = igraci;
-	}
+	public ArrayList<Igrac> getIgraci() { return igraci; }
+	public void setIgraci(ArrayList<Igrac> igraci) { this.igraci = igraci; }
 	
 }

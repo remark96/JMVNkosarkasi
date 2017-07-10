@@ -21,16 +21,13 @@ public class IzvestajUtakmice {
 		statistikaDomacihIgraca = new ArrayList<StatistikaIgraca>();
 		statistikaGostujucihIgraca = new ArrayList<StatistikaIgraca>();
 		
-		StanjeIgraca stanjeIgraca = new StanjeTeren();
 		for (int i = 0; i < NUM_OF_PLAYERS; i++) {
-			if (i == 5) stanjeIgraca = new StanjeKlupa();  
-			
-			statistikaDomacihIgraca.add(new StatistikaIgraca(domaci.get(i), stanjeIgraca));
-			statistikaGostujucihIgraca.add(new StatistikaIgraca(gostujuci.get(i), stanjeIgraca));
+			statistikaDomacihIgraca.add(new StatistikaIgraca(domaci.get(i), new StanjeIgracKojiCeIgrati()));
+			statistikaGostujucihIgraca.add(new StatistikaIgraca(gostujuci.get(i), new StanjeIgracKojiCeIgrati()));
 		}
 		
-		statistikaDomacegTrenera = new StatistikaTrenera();
-		statistikaGostujucegTrenera = new StatistikaTrenera();
+		statistikaDomacegTrenera = new StatistikaTrenera(utakmica.getDomaciKlub().getTrener());
+		statistikaGostujucegTrenera = new StatistikaTrenera(utakmica.getGostujuciKlub().getTrener());
 	}
 
 	public Utakmica getUtakmica() { return utakmica; }

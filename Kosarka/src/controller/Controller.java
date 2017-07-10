@@ -98,6 +98,7 @@ public class Controller {
 
 	public void processExitEvent() {
 		mainWindow.setVisible(false);
+		DataBase.zatvoriDB();
 		System.exit(0);
 		
 	}
@@ -141,8 +142,36 @@ public class Controller {
 			
 			if (pageForNewGame.getIndeksCetvrtine() == 1) ukljuciDataPanele(pageForNewGame);
 			
+			if (pageForNewGame.getIndeksCetvrtine() >= 1 && pageForNewGame.getIndeksCetvrtine() <= 4) {
+				ImagePanel westPanel = pageForNewGame.getWestpanel();
+				GraphicalElement[] hostPlayers =  westPanel.getHostPlayers();
+				GraphicalElement[] guestPlayers =  westPanel.getGuestPlayers();
+				GraphicalElement domaciTrener = westPanel.getTrenerDomacin();
+				GraphicalElement gostujuciTrener = westPanel.getTrenerGost();
+				GraphicalElement domacin = westPanel.getDomacinImage();
+				GraphicalElement gost = westPanel.getGostImage();
+				
+				for (int i = 0; i < hostPlayers.length; i++) {
+					for (int j = 0; j < hostPlayers[i].getDataPanel().getSpinners().length; j++) {
+						hostPlayers[i].getDataPanel().getSpinners()[j].setValue(0);
+						guestPlayers[i].getDataPanel().getSpinners()[j].setValue(0);
+					}
+				}
+				
+				for (int j = 0; j < domaciTrener.getDataPanel().getSpinners().length; j++) {
+					domaciTrener.getDataPanel().getSpinners()[j].setValue(0);
+					gostujuciTrener.getDataPanel().getSpinners()[j].setValue(0);
+					domacin.getDataPanel().getSpinners()[j].setValue(0);
+					gost.getDataPanel().getSpinners()[j].setValue(0);
+				}
+				
+			}
+			
 			String ispis;
-			if (pageForNewGame.getIndeksCetvrtine() < 4) ispis = "Zapocni " + (pageForNewGame.getIndeksCetvrtine() + 1) + ". cetvrtinu";
+			if (pageForNewGame.getIndeksCetvrtine() < 4) {
+				ispis = "Zapocni " + (pageForNewGame.getIndeksCetvrtine() + 1) + ". cetvrtinu";
+				
+			}
 			else ispis = "Kraj";
 			pageForNewGame.getDugmeZaCetvrtinu().setText(ispis);
 		}
@@ -433,7 +462,7 @@ public class Controller {
 		postaviPrvuPostavu(prvaPostavaDomaci, statistikeDomacihIgraca);
 		postaviPrvuPostavu(prvaPostavaGostujuci, statistikeGostujucihIgraca);
 		
-		aplikacija.sacuvajNoviIzvestajUtakmice();
+		aplikacija.sacuvajNoviIzvestajUtakmice(aplikacija.getAktuelniIzvestajUtakmice());
 		mainWindow.getCustomeNewGame().setVisible(false);
 		
 //		JProgressBar progressBar = new JProgressBar();

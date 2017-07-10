@@ -412,4 +412,21 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 	public Controller getController() { return controller; }
 	public void setController(Controller controller) { this.controller = controller; }
 
+	public GraphicalElement getDomacinImage() {
+		return domacinImage;
+	}
+
+	public void setDomacinImage(GraphicalElement domacinImage) {
+		this.domacinImage = domacinImage;
+	}
+
+	public GraphicalElement getGostImage() {
+		return gostImage;
+	}
+
+	public void setGostImage(GraphicalElement gostImage) {
+		this.gostImage = gostImage;
+	}
+
+	
 }

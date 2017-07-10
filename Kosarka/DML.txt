@@ -135,3 +135,11 @@ insert into TRENER values (45, 1, 'images\muta_nikolic.png');
 insert into TRENER values (7, 2, 'images\dejan_radonjic.png');
 insert into TRENER values (1, 3, 'images\pablo_laso.png');
 insert into TRENER values (8, 4, 'images\zeljko_obradovic.png');
+
+
+
+delete from CETVRTINA;
+delete from STATISTIKA_IGRACA;
+delete from STATISTIKA_TRENERA;
+delete from UTAKMICA_SUDIJA;
+delete from UTAKMICA;
