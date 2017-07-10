@@ -122,3 +122,94 @@ FUNKCIONALNI
 		1.2.7.  Rad sa ostalim podešavanjima  
 				1.2.7.0. Promena lozinke
 				1.2.7.1. Odjavljivanje
+
+				 
+NEFUNKCIONALNI
+
+	2.0. Performanse
+	2.1. Bezbednost
+	2.2. Sigurnost
+	2.3. Raspoloživost i pouzdanost
+	2.4. Robusnost
+	2.5. Ostali zahtevi
+
+	
+	2.0. Performanse
+		
+		2.0.0. Vremenski odgovor na korisnicke akcije
+			
+			2.0.0.0. Pokretanje aplikacije  < 5 sekundi
+			2.0.0.1. Prikaz naslovne strane  < 3 sekunde
+			2.0.0.2. Prikaz tabela  < 4 sekunde  
+
+		2.0.1. Preciznost
+			
+			2.0.1.0. Visina igraca se zaokružuje na ceo broj
+			2.0.1.1. Težina igraca se zaokružuje na ceo broj
+
+
+	2.1. Bezbednost
+
+		2.1.0. Softver je potpuno bezbedan za upotrebu i nema rizika
+			za gubitak i štetu (za ljude, imovinu ili okolinu) koji mogu nastati
+			kao rezultat korišcenja ovog sistema
+			
+		
+	2.2. Sigurnost
+
+		2.2.0. Sistemu se pristupa unosom validne kombinacije 
+			korisnickog imena i lozinke
+	
+		2.2.1. Administrator ima pristup bazi podataka, može da unosi,
+			menja, prikazuje i briše podatke. Administrator je taj
+			koji dodaje nove korisnike sistema.
+
+		2.2.2. Regularan korisnik ima mogucnost unosa podataka o novoj
+			utakmici, kao i prikaz izveštaja prethodnih utakmica
+
+
+	2.3. Raspoloživost i pouzdanost
+
+		2.3.0. Sistem ce biti na raspolaganju 24h casa dnevno, 365 dana u godini
+		2.3.1. Proizvod ce imati raspoloživost od 99%
+
+
+	2.4. Robusnost
+
+		2.4.0. Sistem nece moci da nastavi da radi u slucaju gubitka izvora energije
+		2.4.1. Za ispravan rad neophodno je da softver bude povezan sa bazom podataka
+
+
+	2.5. Ostali zahtevi
+
+		2.5.0. Skalabilnost
+
+			2.5.0.0. Ova verzija softvera nije pravljena da bude web aplikacija
+				stoga jednoj instanci aplikacije na jednoj maišini može da pristupa
+				samo jedan korisnik
+			2.5.0.1. U ovoj verziji softvera baza podataka je lokalna. Da bi neko mogao videti
+				podatke unešene na odredenoj mašini, mora se ulogovati na istu.
+
+		2.5.1. Operacioni zahtevi
+
+			2.5.1.0. Softver ce se koristiti u bucnom okruženju što nece naškoditi njegovom
+				ispravnom radu
+			2.5.1.1. Proizvod nece stvarati buku koja je glasnija od okruženja
+			2.5.1.2. Predvideno je da sistem radi u zatvorenom prostoru sa 
+				povecanim dotokom svetlosti
+
+		2.5.2. Internacionalizacija
+
+			2.5.2.0. Korisnicki interfejs aplikacije je na srpskom jeziku.
+			2.5.2.1. Visina igraca je izražena u cm (centimetrima)
+			2.5.2.2. Težina igraca je izražena u kg (kilogramima)
+
+		2.5.3. Administracija i održavanje
+
+			2.5.3.0. Nije potrebno instalirati aplikaciju, dovoljno je imati .exe datoteku
+				i njene propratne datoteke
+			2.5.3.1. Aplikacija se pokrece dvoklikom na .exe datoteku
+			2.5.3.2. Prilikom pada sistema do tada uneti podaci se cuvaju u bazi podataka
+				ali nije implementirana mogucnost da se nastavi unos podataka u 
+				statistiku prekinute utakmice
+	
